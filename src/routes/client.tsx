@@ -613,9 +613,28 @@ function BookingFlow({ clientPhone, clientName }: BookingFlowProps) {
             <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Escolha um horário</h3>
             <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
               {(() => {
+                const todayStr = (() => {
+                  const d = new Date();
+                  const year = d.getFullYear();
+                  const month = String(d.getMonth() + 1).padStart(2, "0");
+                  const day = String(d.getDate()).padStart(2, "0");
+                  return `${year}-${month}-${day}`;
+                })();
+
+                const nowTimeStr = (() => {
+                  const d = new Date();
+                  const hours = String(d.getHours()).padStart(2, "0");
+                  const minutes = String(d.getMinutes()).padStart(2, "0");
+                  return `${hours}:${minutes}`;
+                })();
+
                 const activeSlots = allTimeSlots.filter((time) => {
                   const barberStart = selectedBarber?.startTime || "08:00";
                   const barberEnd = selectedBarber?.endTime || "19:00";
+                  
+                  if (selectedDate === todayStr) {
+                    return time >= barberStart && time < barberEnd && time > nowTimeStr;
+                  }
                   return time >= barberStart && time < barberEnd;
                 });
 
