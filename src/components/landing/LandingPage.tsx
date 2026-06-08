@@ -29,96 +29,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-function PhoneMockup() {
-  return (
-    <div className="relative mx-auto w-full max-w-[320px]">
-      <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-500/20 via-amber-500/0 to-amber-500/10 blur-2xl" />
-      <div className="relative rounded-[2.5rem] bg-zinc-800 p-3 shadow-2xl ring-1 ring-zinc-700">
-        <div className="rounded-[2rem] bg-zinc-950 p-1 ring-1 ring-zinc-700">
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-zinc-900 to-zinc-950">
-            <div className="flex justify-center pt-3 pb-1">
-              <div className="h-5 w-24 rounded-full bg-zinc-800" />
-            </div>
-            <div className="px-5 pb-6 pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-500">Olá, Carlos</p>
-                  <p className="text-sm font-bold text-white">Painel de Hoje</p>
-                </div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 ring-1 ring-amber-500/30">
-                  <Scissors className="h-4 w-4 text-amber-400" />
-                </div>
-              </div>
 
-              <div className="mt-5 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 text-zinc-950 shadow-lg">
-                <p className="text-[10px] font-semibold uppercase tracking-wider">Faturamento Hoje</p>
-                <p className="mt-1 text-2xl font-extrabold">R$ 1.847,00</p>
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>+24% vs ontem</span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <div className="rounded-xl bg-zinc-800/80 p-3 ring-1 ring-zinc-700">
-                  <Users className="h-3.5 w-3.5 text-amber-400" />
-                  <p className="mt-1 text-base font-bold text-white">23</p>
-                  <p className="text-[9px] text-zinc-400">Atendimentos</p>
-                </div>
-                <div className="rounded-xl bg-zinc-800/80 p-3 ring-1 ring-zinc-700">
-                  <Calendar className="h-3.5 w-3.5 text-amber-400" />
-                  <p className="mt-1 text-base font-bold text-white">8</p>
-                  <p className="text-[9px] text-zinc-400">Próximos</p>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-semibold text-white">Próximos Horários</p>
-                  <p className="text-[10px] text-amber-400">Ver tudo</p>
-                </div>
-                <div className="mt-2 space-y-1.5">
-                  {[
-                    { name: "João S.", time: "14:30", svc: "Corte + Barba" },
-                    { name: "Pedro M.", time: "15:00", svc: "Corte" },
-                    { name: "Lucas A.", time: "15:30", svc: "Barba" },
-                  ].map((a) => (
-                    <div
-                      key={a.name}
-                      className="flex items-center gap-2 rounded-lg bg-zinc-800/60 p-2 ring-1 ring-zinc-700/50"
-                    >
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500/15 text-[10px] font-bold text-amber-400">
-                        {a.name.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[11px] font-semibold text-white">{a.name}</p>
-                        <p className="text-[9px] text-zinc-400">{a.svc}</p>
-                      </div>
-                      <p className="text-[10px] font-bold text-amber-400">{a.time}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl bg-zinc-800/60 p-3 ring-1 ring-zinc-700/50">
-                <div className="flex items-end justify-between gap-1 h-12">
-                  {[40, 65, 50, 80, 70, 95, 85].map((h, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 rounded-t bg-gradient-to-t from-amber-600 to-amber-400"
-                      style={{ height: `${h}%` }}
-                    />
-                  ))}
-                </div>
-                <p className="mt-2 text-[9px] text-zinc-500">Faturamento semanal</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function AdminPanel() {
   return (
@@ -486,9 +397,7 @@ export function LandingPage() {
               <SignupCard />
             </div>
 
-            <div className="mt-12 flex justify-center">
-              <PhoneMockup />
-            </div>
+
           </div>
         </div>
       </section>
