@@ -337,9 +337,9 @@ function SignupCard() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-5 w-full rounded-lg bg-amber-500 px-6 py-4 text-sm font-bold tracking-wide text-zinc-950 hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2"
+        className="mt-5 w-full rounded-lg bg-amber-500 px-4 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold tracking-wide text-zinc-950 hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer"
       >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "CRIAR MINHA CONTA MEU BARBEIRO GO →"}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "CRIAR MINHA CONTA →"}
       </button>
       <p className="mt-3 text-center text-xs text-zinc-500">
         ✓ Sem cartão de crédito. Teste grátis por 1 mês completo.
@@ -353,21 +353,21 @@ export function LandingPage() {
     <div className="min-h-screen bg-zinc-950 text-white antialiased">
       {/* Nav */}
       <header className="border-b border-zinc-900">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-2.5">
-            <BarberGoLogo className="w-8 h-8" />
-            <span className="text-lg font-extrabold tracking-tight">Meu Barbeiro <span className="text-amber-500">GO</span></span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <BarberGoLogo className="w-6 h-6 sm:w-8 h-8" />
+            <span className="text-xs sm:text-base md:text-lg font-extrabold tracking-tight whitespace-nowrap">Meu Barbeiro <span className="text-amber-500">GO</span></span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <Link
               to="/login"
-              className="rounded-lg border border-zinc-800 px-4 py-2 text-sm font-bold text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors"
+              className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors whitespace-nowrap"
             >
               Entrar
             </Link>
             <Link
               to="/login"
-              className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-colors"
+              className="rounded-lg bg-amber-500 px-2.5 py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-colors whitespace-nowrap"
             >
               Teste Grátis
             </Link>
@@ -383,7 +383,7 @@ export function LandingPage() {
             <span className="inline-flex items-center rounded-full bg-zinc-900 px-3 py-1 text-xs font-bold text-amber-400 ring-1 ring-amber-500/20">
               🔥 OFERTA DE LANÇAMENTO: 30 DIAS GRÁTIS
             </span>
-            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight max-w-4xl">
+            <h1 className="mt-6 text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.15] sm:leading-[1.05] tracking-tight max-w-4xl">
               Sua Barbearia no <span className="text-amber-400">Piloto Automático</span>.
               O Controle Total do Seu Faturamento na Palma da Mão.
             </h1>
@@ -406,9 +406,9 @@ export function LandingPage() {
       <footer className="border-t border-zinc-900 bg-zinc-950">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <BarberGoLogo className="w-8 h-8" />
-              <span className="font-extrabold tracking-tight">Meu Barbeiro <span className="text-amber-500">GO</span></span>
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
+              <BarberGoLogo className="w-6 h-6 sm:w-8 h-8" />
+              <span className="font-extrabold tracking-tight text-xs sm:text-base whitespace-nowrap">Meu Barbeiro <span className="text-amber-500">GO</span></span>
               <span className="ml-3 hidden sm:inline text-xs text-zinc-500">
                 © {new Date().getFullYear()} — Todos os direitos reservados
               </span>
