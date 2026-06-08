@@ -9,9 +9,9 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://storage.googleapis.com/gpt-engineer-file-uploads/5eQXshP4n1S4KwIxT0t4cuyPGzH3/social-images/social-1780800297053-IMAGEM_APP.webp",
+      "src": "/og_image.png",
       "sizes": "512x512",
-      "type": "image/webp",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

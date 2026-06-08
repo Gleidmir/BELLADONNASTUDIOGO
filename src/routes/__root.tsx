@@ -89,8 +89,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@meubarbeirogo" },
       { name: "twitter:title", content: "MEU BARBEIRO GO" },
       { name: "twitter:description", content: "Meu Barbeiro GO — Seu corte, sua hora, você no controle. Sistema de agendamento online fácil e prático para barbearias." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5eQXshP4n1S4KwIxT0t4cuyPGzH3/social-images/social-1780800297053-IMAGEM_APP.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5eQXshP4n1S4KwIxT0t4cuyPGzH3/social-images/social-1780800297053-IMAGEM_APP.webp" },
+      { property: "og:image", content: "https://meubarbeirogo.netlify.app/og_image.png" },
+      { name: "twitter:image", content: "https://meubarbeirogo.netlify.app/og_image.png" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -110,7 +110,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "apple-touch-icon",
-        href: "https://storage.googleapis.com/gpt-engineer-file-uploads/5eQXshP4n1S4KwIxT0t4cuyPGzH3/social-images/social-1780800297053-IMAGEM_APP.webp",
+        href: "https://meubarbeirogo.netlify.app/og_image.png",
       },
       {
         rel: "canonical",
@@ -124,7 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "HairSalon",
           "name": "Meu Barbeiro GO",
-          "image": "https://storage.googleapis.com/gpt-engineer-file-uploads/5eQXshP4n1S4KwIxT0t4cuyPGzH3/social-images/social-1780800297053-IMAGEM_APP.webp",
+          "image": "https://meubarbeirogo.netlify.app/og_image.png",
           "url": "https://meubarbeirogo.netlify.app",
           "telephone": "+5562999999999",
           "priceRange": "$$",
