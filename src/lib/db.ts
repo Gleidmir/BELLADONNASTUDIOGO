@@ -657,13 +657,22 @@ export const logout = () => {
 export const resetLocalDB = () => {
   if (isServer) return;
   const tenantId = getCurrentTenantId();
-  window.localStorage.removeItem(`mbg_barbers_${tenantId}`);
-  window.localStorage.removeItem(`mbg_services_${tenantId}`);
-  window.localStorage.removeItem(`mbg_clients_${tenantId}`);
-  window.localStorage.removeItem(`mbg_appointments_${tenantId}`);
-  window.localStorage.removeItem("mbg_session");
-  initDB();
-  toast.success("Todos os dados foram resetados para o padrão!");
+  const appointmentsKey = `mbg_appointments_${tenantId}`;
+  const appointmentsStr = window.localStorage.getItem(appointmentsKey);
+  if (appointmentsStr) {
+    try {
+      const appointments = JSON.parse(appointmentsStr) as Appointment[];
+      // Mantém apenas os agendamentos pendentes, removendo os finalizados e cancelados
+      const pendingAppointments = appointments.filter((apt) => apt.status === "pending");
+      window.localStorage.setItem(appointmentsKey, JSON.stringify(pendingAppointments));
+    } catch (e) {
+      console.error("Erro ao ler agendamentos no reset:", e);
+      window.localStorage.setItem(appointmentsKey, JSON.stringify([]));
+    }
+  } else {
+    window.localStorage.setItem(appointmentsKey, JSON.stringify([]));
+  }
+  toast.success("Histórico de atendimentos e faturamento zerados com sucesso!");
 };
 
 // --- STATS ---

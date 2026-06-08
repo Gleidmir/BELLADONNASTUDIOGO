@@ -76,7 +76,7 @@ function ClientDashboard() {
   };
 
   const handleResetData = () => {
-    if (confirm("ATENÇÃO: Isso irá apagar todos os seus agendamentos e dados locais. Deseja continuar?")) {
+    if (confirm("ATENÇÃO: Isso irá apagar todos os seus agendamentos finalizados ou cancelados e histórico. O cadastro de barbeiros e serviços será preservado. Deseja continuar?")) {
       resetLocalDB();
       setTimeout(() => {
         window.location.reload();
@@ -105,8 +105,8 @@ function ClientDashboard() {
             <span className="text-xs text-zinc-400 font-medium">Olá, {session.name}</span>
             <button
               onClick={handleResetData}
-              className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 transition-colors cursor-pointer"
-              title="Resetar Todos os Dados Locais"
+              className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white transition-colors cursor-pointer"
+              title="Resetar Dados Locais"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>

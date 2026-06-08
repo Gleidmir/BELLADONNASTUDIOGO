@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
       { title: "MEU BARBEIRO GO" },
       { name: "description", content: "Meu Barbeiro GO — Seu corte, sua hora, você no controle. Sistema de agendamento online fácil e prático para barbearias." },
       { name: "author", content: "Meu Barbeiro GO" },

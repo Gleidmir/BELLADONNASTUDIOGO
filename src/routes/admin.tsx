@@ -183,7 +183,7 @@ function AdminDashboard() {
   };
 
   const handleResetData = () => {
-    if (confirm("ATENÇÃO: Isso irá apagar todos os agendamentos, clientes e barbeiros locais, restaurando o aplicativo para o padrão de fábrica. Deseja continuar?")) {
+    if (confirm("ATENÇÃO: Isso irá apagar todo o faturamento acumulado e os agendamentos finalizados ou cancelados. Os barbeiros, clientes cadastrados e serviços serão preservados. Deseja continuar?")) {
       resetLocalDB();
       setTimeout(() => {
         window.location.reload();
@@ -459,31 +459,32 @@ function AdminDashboard() {
 
       {/* Top Header */}
       <header className="border-b border-zinc-900 bg-zinc-900/40 backdrop-blur sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <BarberGoLogo className="w-10 h-10" />
-            <div>
-              <span className="text-base font-extrabold tracking-tight block">Meu Barbeiro <span className="text-amber-500">GO</span></span>
-              <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block">Painel do Barbeiro</span>
+        <div className="mx-auto max-w-7xl flex items-center justify-between px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <BarberGoLogo className="w-10 h-10 shrink-0" />
+            <div className="min-w-0">
+              <span className="text-base font-extrabold tracking-tight block truncate">Meu Barbeiro <span className="text-amber-500">GO</span></span>
+              <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block truncate">Painel do Barbeiro</span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <div className="hidden md:flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 ring-1 ring-emerald-500/30">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-semibold text-emerald-300">Caixa Aberto</span>
             </div>
             <button
               onClick={handleResetData}
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 px-4 py-2 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 sm:px-4 py-2 text-xs font-bold border border-red-500/20 hover:border-transparent transition-all cursor-pointer"
               title="Resetar Banco de Dados Local"
             >
-              <RotateCcw className="h-4 w-4" /> Resetar Dados
+              <RotateCcw className="h-4 w-4 shrink-0" /> <span className="hidden sm:inline">Resetar Dados</span>
             </button>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 px-4 py-2 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 px-3 sm:px-4 py-2 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer"
+              title="Sair"
             >
-              <LogOut className="h-4 w-4" /> Sair
+              <LogOut className="h-4 w-4 shrink-0" /> <span className="hidden sm:inline">Sair</span>
             </button>
           </div>
         </div>
@@ -557,12 +558,12 @@ function AdminDashboard() {
 
               {/* Charts Grid */}
               {mounted && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0 overflow-hidden">
                   
                   {/* Revenue History Chart */}
-                  <div className="bg-zinc-900/60 ring-1 ring-zinc-900 rounded-2xl p-5">
+                  <div className="bg-zinc-900/60 ring-1 ring-zinc-900 rounded-2xl p-5 min-w-0 overflow-hidden">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Evolução do Faturamento (Histórico 12 Meses)</h3>
-                    <div className="h-64">
+                    <div className="h-64 min-w-0 overflow-hidden">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={stats.monthlyHistory} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                           <defs>
@@ -585,9 +586,9 @@ function AdminDashboard() {
                   </div>
 
                   {/* Barber Performance Chart */}
-                  <div className="bg-zinc-900/60 ring-1 ring-zinc-900 rounded-2xl p-5">
+                  <div className="bg-zinc-900/60 ring-1 ring-zinc-900 rounded-2xl p-5 min-w-0 overflow-hidden">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Desempenho por Barbeiro (Faturamento)</h3>
-                    <div className="h-64">
+                    <div className="h-64 min-w-0 overflow-hidden">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={stats.barberPerformance} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
