@@ -355,7 +355,7 @@ export function LandingPage() {
       <header className="border-b border-zinc-900 bg-zinc-950 sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-3 pb-3">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6">
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            <BarberGoLogo className="w-6 h-6 sm:w-8 h-8 shrink-0" />
+            <BarberGoLogo className="w-6 h-6 sm:w-8 h-8 shrink-0 animate-pulse" />
             <span className="text-[10px] xs:text-xs sm:text-base md:text-lg font-extrabold tracking-tight whitespace-nowrap truncate">
               Meu Barbeiro <span className="text-amber-500">GO</span>
             </span>
@@ -363,7 +363,7 @@ export function LandingPage() {
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <Link
               to="/login"
-              className="rounded-lg border border-amber-500 bg-zinc-950 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-amber-400 hover:text-zinc-950 hover:bg-amber-500 transition-all whitespace-nowrap"
+              className="rounded-lg border border-emerald-500 bg-zinc-950 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-emerald-400 hover:text-zinc-950 hover:bg-emerald-500 transition-all whitespace-nowrap"
             >
               Entrar
             </Link>

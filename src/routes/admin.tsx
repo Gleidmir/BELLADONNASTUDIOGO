@@ -22,6 +22,9 @@ import {
   UserCheck,
   Clock,
   RotateCcw,
+  Copy,
+  Lock,
+  KeyRound,
 } from "lucide-react";
 import {
   AreaChart,
@@ -58,6 +61,9 @@ import {
   addClient,
   updateClient,
   deleteClient,
+  checkSubscriptionStatus,
+  activateSubscription,
+  getTenantConfig,
 } from "../lib/db";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -99,6 +105,53 @@ function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "agenda" | "clientes" | "servicos" | "barbeiros">("dashboard");
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Subscription management state
+  const [subCheck, setSubCheck] = useState<{ status: "trial" | "active" | "expired"; daysLeft: number } | null>(null);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [activationCode, setActivationCode] = useState("");
+  const [activating, setActivating] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"mensal" | "trimestral" | "semestral" | "anual">("mensal");
+
+  const refreshSubscriptionStatus = () => {
+    const check = checkSubscriptionStatus();
+    setSubCheck(check);
+  };
+
+  const handleCopyPixKey = () => {
+    try {
+      navigator.clipboard.writeText("62993299120");
+      toast.success("Chave Pix (Celular) copiada para a área de transferência!");
+    } catch (e) {
+      toast.error("Erro ao copiar. A chave é: 62993299120");
+    }
+  };
+
+  const handleActivate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activationCode.trim()) {
+      toast.error("Por favor, digite o código de ativação.");
+      return;
+    }
+
+    setActivating(true);
+    try {
+      const success = await activateSubscription(activationCode);
+      if (success) {
+        toast.success("Assinatura ativada com sucesso!");
+        setActivationCode("");
+        setShowSubscriptionModal(false);
+        refreshSubscriptionStatus();
+      } else {
+        toast.error("Código de ativação inválido. Entre em contato com o suporte.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao processar ativação.");
+    } finally {
+      setActivating(false);
+    }
+  };
 
   // States for DB data
   const [stats, setStats] = useState<any>(null);
@@ -155,6 +208,11 @@ function AdminDashboard() {
         setSession(user);
       }
       await loadAllData();
+      
+      // Check subscription status
+      const check = checkSubscriptionStatus();
+      setSubCheck(check);
+
       setMounted(true);
     };
 
@@ -516,6 +574,64 @@ function AdminDashboard() {
     );
   }
 
+  if (subCheck?.status === "expired") {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white antialiased flex flex-col justify-between relative">
+        {/* Top Header */}
+        <header className="border-b border-zinc-900 bg-zinc-950 sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-4 pb-3">
+          <div className="mx-auto max-w-7xl flex items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center gap-3 min-w-0">
+              <BarberGoLogo className="w-10 h-10 shrink-0 animate-pulse" />
+              <div className="min-w-0">
+                <span className="text-base font-extrabold tracking-tight block truncate">Meu Barbeiro <span className="text-amber-500">GO</span></span>
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block truncate">Assinatura Expirada</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 px-3 sm:px-4 py-2 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer"
+                title="Sair"
+              >
+                <LogOut className="h-4 w-4 shrink-0" /> <span className="hidden sm:inline">Sair</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Block Body */}
+        <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-8 flex flex-col justify-center">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 mb-4 animate-bounce">
+              <Lock className="h-8 w-8" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white animate-fade-in">
+              Acesso Suspenso
+            </h1>
+            <p className="text-zinc-400 text-sm mt-2">
+              Seu período de avaliação gratuita ou sua assinatura expirou. Para reativar seu acesso e continuar gerenciando sua barbearia, escolha e assine um plano.
+            </p>
+          </div>
+
+          <SubscriptionSection
+            selectedPlan={selectedPlan}
+            setSelectedPlan={setSelectedPlan}
+            activationCode={activationCode}
+            setActivationCode={setActivationCode}
+            activating={activating}
+            handleActivate={handleActivate}
+            handleCopyPixKey={handleCopyPixKey}
+          />
+        </main>
+
+        {/* Footer */}
+        <footer className="py-4 text-center text-[10px] text-zinc-600 border-t border-zinc-900 bg-zinc-950">
+          Painel de Gerenciamento Meu Barbeiro GO — Todos os direitos reservados.
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white antialiased flex flex-col justify-between relative">
       {/* Loading Overlay */}
@@ -532,7 +648,7 @@ function AdminDashboard() {
       <header className="border-b border-zinc-900 bg-zinc-950 sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-4 pb-3">
         <div className="mx-auto max-w-7xl flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3 min-w-0">
-            <BarberGoLogo className="w-10 h-10 shrink-0" />
+            <BarberGoLogo className="w-10 h-10 shrink-0 animate-pulse" />
             <div className="min-w-0">
               <span className="text-base font-extrabold tracking-tight block truncate">Meu Barbeiro <span className="text-amber-500">GO</span></span>
               <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block truncate">Painel do Barbeiro</span>
@@ -560,6 +676,23 @@ function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {/* Trial Banner */}
+      {subCheck && subCheck.status === "trial" && (
+        <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-amber-500/20 border-b border-amber-500/30 py-2.5 px-4 text-center animate-in slide-in-from-top duration-300">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2.5 text-xs">
+            <span className="font-semibold text-amber-300">
+              Você está no período de teste grátis (restam {subCheck.daysLeft} {subCheck.daysLeft === 1 ? 'dia' : 'dias'}).
+            </span>
+            <button
+              onClick={() => setShowSubscriptionModal(true)}
+              className="rounded-full bg-amber-500 text-zinc-950 px-4 py-1 font-extrabold text-[10px] hover:bg-amber-400 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md shadow-amber-500/15"
+            >
+              Assinar um Plano
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Container */}
       <div className="flex-1 mx-auto w-full max-w-7xl px-6 py-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -604,6 +737,39 @@ function AdminDashboard() {
           {activeTab === "dashboard" && (
             <div className="space-y-6">
               
+              {/* Link de Agendamento Card */}
+              <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-zinc-900 border border-amber-500/20 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-left">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-500">Seu Link de Agendamento Online</h3>
+                  <p className="text-xs text-zinc-300">
+                    Compartilhe este link com seus clientes nas redes sociais ou WhatsApp para que eles agendem sozinhos:
+                  </p>
+                  <p className="text-[11px] font-mono text-zinc-500 mt-1 select-all break-all">
+                    {typeof window !== "undefined" ? `${window.location.origin}/client?t=${session?.email || "default"}` : ""}
+                  </p>
+                </div>
+                <div className="flex gap-2 w-full md:w-auto shrink-0">
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/client?t=${session?.email || "default"}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success("Link de agendamento copiado com sucesso!");
+                    }}
+                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2.5 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer active:scale-95"
+                  >
+                    <Copy className="h-4 w-4" /> Copiar Link
+                  </button>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Olá! Agende seu horário na nossa barbearia online pelo link: ${typeof window !== "undefined" ? window.location.origin : ""}/client?t=${session?.email || "default"}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow shadow-green-500/10 cursor-pointer active:scale-95"
+                  >
+                    <WhatsAppIcon className="h-4 w-4 shrink-0" /> Divulgar
+                  </a>
+                </div>
+              </div>
+
               {/* KPIs Row */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {[
@@ -1413,6 +1579,225 @@ function AdminDashboard() {
       <footer className="py-4 text-center text-[10px] text-zinc-600 border-t border-zinc-900 bg-zinc-950">
         Painel de Gerenciamento Meu Barbeiro GO — Todos os direitos reservados.
       </footer>
+
+      {/* Early Subscription Modal */}
+      {showSubscriptionModal && (
+        <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-4xl w-full p-6 sm:p-8 relative my-8 max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowSubscriptionModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="text-center max-w-2xl mx-auto mb-6">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                Planos de Assinatura
+              </h2>
+              <p className="text-zinc-400 text-xs mt-1">
+                Selecione um plano e realize o pagamento para prolongar o acesso da sua barbearia.
+              </p>
+            </div>
+
+            <SubscriptionSection
+              selectedPlan={selectedPlan}
+              setSelectedPlan={setSelectedPlan}
+              activationCode={activationCode}
+              setActivationCode={setActivationCode}
+              activating={activating}
+              handleActivate={handleActivate}
+              handleCopyPixKey={handleCopyPixKey}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// SubscriptionSection component helper
+function SubscriptionSection({
+  selectedPlan,
+  setSelectedPlan,
+  activationCode,
+  setActivationCode,
+  activating,
+  handleActivate,
+  handleCopyPixKey
+}: {
+  selectedPlan: "mensal" | "trimestral" | "semestral" | "anual";
+  setSelectedPlan: (plan: "mensal" | "trimestral" | "semestral" | "anual") => void;
+  activationCode: string;
+  setActivationCode: (code: string) => void;
+  activating: boolean;
+  handleActivate: (e: React.FormEvent) => void;
+  handleCopyPixKey: () => void;
+}) {
+  const plans = [
+    { id: "mensal" as const, name: "Mensal", price: "R$ 29,90", rawPrice: 29.90, desc: "Acesso por 30 dias", detail: "R$ 29,90 / mês" },
+    { id: "trimestral" as const, name: "Trimestral", price: "R$ 74,90", rawPrice: 74.90, desc: "Acesso por 90 dias", detail: "R$ 24,96 / mês", popular: true },
+    { id: "semestral" as const, name: "Semestral", price: "R$ 139,90", rawPrice: 139.90, desc: "Acesso por 180 dias", detail: "R$ 23,31 / mês" },
+    { id: "anual" as const, name: "Anual", price: "R$ 239,90", rawPrice: 239.90, desc: "Acesso por 365 dias", detail: "R$ 19,99 / mês", bestDeal: true },
+  ];
+
+  const currentPlan = plans.find(p => p.id === selectedPlan)!;
+
+  const getWhatsAppLink = () => {
+    const message = `Olá Gleidmir! Realizei o pagamento do plano *${currentPlan.name}* (R$ ${currentPlan.price}) para minha barbearia. Aqui está o comprovante!`;
+    return `https://wa.me/5562993299120?text=${encodeURIComponent(message)}`;
+  };
+
+  return (
+    <div className="space-y-6 text-left">
+      {/* Plans grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {plans.map((p) => {
+          const isSelected = selectedPlan === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => setSelectedPlan(p.id)}
+              className={`relative flex flex-col justify-between p-5 rounded-2xl border text-left transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                isSelected
+                  ? "bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/30"
+                  : "bg-zinc-900/40 border-zinc-900 hover:border-zinc-800"
+              }`}
+            >
+              {p.popular && (
+                <span className="absolute -top-2.5 left-4 rounded-full bg-amber-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wide">
+                  Mais Popular
+                </span>
+              )}
+              {p.bestDeal && (
+                <span className="absolute -top-2.5 left-4 rounded-full bg-emerald-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wide">
+                  Melhor Preço
+                </span>
+              )}
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">{p.name}</h3>
+                <p className="text-2xl font-extrabold text-white mt-2">{p.price}</p>
+                <p className="text-[10px] text-zinc-500 mt-1">{p.detail}</p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-zinc-900/60 w-full">
+                <p className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  {p.desc}
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Pix Details */}
+      <div className="bg-zinc-900/60 border border-zinc-900 rounded-3xl p-6">
+        <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <DollarSign className="h-4 w-4 text-emerald-400" />
+          Pagamento do Plano {currentPlan.name}
+        </h3>
+
+        <div className="flex flex-col md:flex-row gap-6 items-center">
+          {/* QR Code Container */}
+          <div className="flex flex-col items-center bg-white p-4 rounded-2xl shrink-0 border border-zinc-800 max-w-[200px]">
+            <img
+              src="/pix_qr.jpg"
+              alt="QR Code Pix"
+              className="w-40 h-40 object-contain rounded-lg"
+            />
+            <span className="text-[10px] text-zinc-500 font-bold mt-2 uppercase tracking-wide">
+              Neon Pagamentos
+            </span>
+          </div>
+
+          {/* Key and Info Container */}
+          <div className="flex-1 w-full space-y-4">
+            <p className="text-xs text-zinc-400">
+              Escaneie o QR Code ao lado com seu aplicativo do banco ou use a chave Pix celular abaixo:
+            </p>
+
+            <div className="space-y-3">
+              {/* Copiar Chave */}
+              <div className="rounded-2xl bg-zinc-950 p-4 border border-zinc-800 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="text-[9px] text-zinc-500 uppercase font-black block">Chave Pix (Celular)</span>
+                  <span className="text-sm font-mono font-bold text-white truncate block">
+                    (62) 99329-9120
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyPixKey}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3.5 py-2 text-xs font-bold transition-all shrink-0 active:scale-95 cursor-pointer"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  <span>Copiar</span>
+                </button>
+              </div>
+
+              {/* Account details */}
+              <div className="grid grid-cols-2 gap-3 text-[10px] bg-zinc-950/40 p-3 rounded-xl border border-zinc-900">
+                <div>
+                  <span className="text-zinc-500 uppercase font-bold block">Favorecido</span>
+                  <span className="text-zinc-300 font-semibold block">Gleidmir Cristino Dos Santos</span>
+                </div>
+                <div>
+                  <span className="text-zinc-500 uppercase font-bold block">Banco</span>
+                  <span className="text-zinc-300 font-semibold block">Neon Pagamentos S.A.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Enviar Comprovante WhatsApp */}
+            <a
+              href={getWhatsAppLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 hover:bg-green-500 text-white py-3.5 text-xs font-bold transition-all shadow-lg shadow-green-600/15 active:scale-[0.99]"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              </svg>
+              <span>Enviar Comprovante pelo WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Activation Form */}
+      <form onSubmit={handleActivate} className="bg-zinc-900/60 border border-zinc-900 rounded-3xl p-6 flex flex-col md:flex-row items-end gap-4 animate-fade-in">
+        <div className="flex-1 w-full space-y-2 text-left">
+          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+            <KeyRound className="h-4 w-4 text-amber-500" />
+            Inserir Código de Ativação
+          </label>
+          <p className="text-[10px] text-zinc-500">
+            Digite o código fornecido pelo suporte após o envio do comprovante para liberar o seu acesso.
+          </p>
+          <input
+            type="text"
+            required
+            value={activationCode}
+            onChange={(e) => setActivationCode(e.target.value)}
+            placeholder="Ex: ATIVA_MEN_MBG"
+            className="w-full rounded-2xl bg-zinc-950 px-4 py-3.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={activating}
+          className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-8 py-3.5 text-xs font-bold transition-all shadow shadow-amber-500/10 hover:shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
+        >
+          {activating ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-zinc-950" />
+          ) : (
+            <>
+              <Check className="h-4 w-4" />
+              <span>Ativar Conta</span>
+            </>
+          )}
+        </button>
+      </form>
     </div>
   );
 }

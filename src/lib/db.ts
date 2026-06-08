@@ -737,6 +737,157 @@ export const resetLocalDB = async () => {
   toast.success("Histórico de atendimentos e faturamento zerados com sucesso!");
 };
 
+// --- SUBSCRIPTION & TRIAL ---
+export interface TenantConfig {
+  registeredAt: string;
+  subscriptionPlan?: "mensal" | "trimestral" | "semestral" | "anual" | "master";
+  subscriptionStatus: "trial" | "active" | "expired";
+  subscriptionExpiresAt?: string;
+}
+
+export const getTenantConfig = (): TenantConfig => {
+  if (isServer) {
+    return { registeredAt: new Date().toISOString(), subscriptionStatus: "trial" };
+  }
+  const tenantId = getCurrentTenantId();
+  const key = `mbg_tenant_config_${tenantId}`;
+  const stored = window.localStorage.getItem(key);
+  if (stored) {
+    try {
+      return JSON.parse(stored) as TenantConfig;
+    } catch (e) {
+      console.error("Erro ao parsear TenantConfig:", e);
+    }
+  }
+  // Inicializa com a data de hoje como trial
+  const newConfig: TenantConfig = {
+    registeredAt: new Date().toISOString(),
+    subscriptionStatus: "trial",
+  };
+  window.localStorage.setItem(key, JSON.stringify(newConfig));
+  return newConfig;
+};
+
+export const updateTenantConfig = (config: TenantConfig) => {
+  if (isServer) return;
+  const tenantId = getCurrentTenantId();
+  const key = `mbg_tenant_config_${tenantId}`;
+  window.localStorage.setItem(key, JSON.stringify(config));
+};
+
+export interface SubscriptionCheck {
+  status: "trial" | "active" | "expired";
+  daysLeft: number;
+}
+
+export const checkSubscriptionStatus = (): SubscriptionCheck => {
+  const config = getTenantConfig();
+  const now = new Date();
+
+  // Se for master/premium permanente
+  if (config.subscriptionStatus === "active" && config.subscriptionPlan === "master") {
+    return { status: "active", daysLeft: 9999 };
+  }
+
+  // Se possuir assinatura ativa
+  if (config.subscriptionStatus === "active" && config.subscriptionExpiresAt) {
+    const expiresAt = new Date(config.subscriptionExpiresAt);
+    if (now > expiresAt) {
+      // Expirou
+      const expiredConfig: TenantConfig = {
+        ...config,
+        subscriptionStatus: "expired",
+      };
+      updateTenantConfig(expiredConfig);
+      return { status: "expired", daysLeft: 0 };
+    } else {
+      const diffTime = Math.abs(expiresAt.getTime() - now.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return { status: "active", daysLeft: diffDays };
+    }
+  }
+
+  // Se estiver no período de testes (trial)
+  if (config.subscriptionStatus === "trial") {
+    const regDate = new Date(config.registeredAt);
+    const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias
+
+    if (now > trialEndDate) {
+      // O período de testes acabou
+      const expiredConfig: TenantConfig = {
+        ...config,
+        subscriptionStatus: "expired",
+      };
+      updateTenantConfig(expiredConfig);
+      return { status: "expired", daysLeft: 0 };
+    } else {
+      const diffTime = Math.abs(trialEndDate.getTime() - now.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return { status: "trial", daysLeft: diffDays };
+    }
+  }
+
+  return { status: config.subscriptionStatus, daysLeft: 0 };
+};
+
+export const activateSubscription = async (code: string): Promise<boolean> => {
+  const cleanCode = code.trim().toUpperCase();
+  const config = getTenantConfig();
+  let daysToAdd = 0;
+  let plan: "mensal" | "trimestral" | "semestral" | "anual" | "master" | null = null;
+
+  switch (cleanCode) {
+    case "ATIVA_MEN_MBG":
+      daysToAdd = 30;
+      plan = "mensal";
+      break;
+    case "ATIVA_TRI_MBG":
+      daysToAdd = 90;
+      plan = "trimestral";
+      break;
+    case "ATIVA_SEM_MBG":
+      daysToAdd = 180;
+      plan = "semestral";
+      break;
+    case "ATIVA_ANU_MBG":
+      daysToAdd = 365;
+      plan = "anual";
+      break;
+    case "MASTER_MBG_VIP":
+      plan = "master";
+      break;
+    default:
+      return false; // Código inválido
+  }
+
+  const now = new Date();
+  let baseDate = now;
+
+  // Se já possuir um plano ativo, soma ao tempo restante
+  if (config.subscriptionStatus === "active" && config.subscriptionExpiresAt) {
+    const currentExpiry = new Date(config.subscriptionExpiresAt);
+    if (currentExpiry > now) {
+      baseDate = currentExpiry;
+    }
+  }
+
+  let expiresAtStr: string | undefined;
+  if (plan !== "master") {
+    const newExpiry = new Date(baseDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+    expiresAtStr = newExpiry.toISOString();
+  }
+
+  const updatedConfig: TenantConfig = {
+    ...config,
+    subscriptionStatus: "active",
+    subscriptionPlan: plan!,
+    subscriptionExpiresAt: expiresAtStr,
+  };
+
+  updateTenantConfig(updatedConfig);
+  return true;
+};
+
 // --- STATS ---
 export interface DashboardStats {
   dailyEarnings: number;
