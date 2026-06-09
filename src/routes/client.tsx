@@ -66,7 +66,7 @@ function ClientDashboard() {
       }
     }
     const user = getCurrentUser();
-    if (!user) {
+    if (!user || user.role !== "client") {
       navigate({ to: tenant ? `/login?t=${tenant}` : "/login" });
     } else {
       setSession(user);
