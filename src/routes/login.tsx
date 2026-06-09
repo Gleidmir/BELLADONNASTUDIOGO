@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { ShieldAlert, ArrowLeft, Loader2, Phone, User, Mail, Lock } from "lucide-react";
 import { BarberGoLogo } from "../components/ui/logo";
 import { toast } from "sonner";
-import { getCurrentUser, setCurrentUser, addClient } from "../lib/db";
+import { getCurrentUser, setCurrentUser, addClient, logout } from "../lib/db";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
 export const Route = createFileRoute("/login")({
@@ -55,14 +55,39 @@ function LoginPage() {
         }
       }
     }
-    const session = getCurrentUser();
-    if (session) {
-      if (session.role === "admin") {
-        navigate({ to: "/admin" });
+
+    const checkSession = async () => {
+      if (isSupabaseConfigured) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setCurrentUser({
+            role: "admin",
+            name: session.user?.user_metadata?.name || "Barbeiro Administrador",
+            email: session.user?.email || "",
+          });
+          navigate({ to: "/admin" });
+        } else {
+          // Prevent infinite redirect loops if there is an offline session but no Supabase session
+          const localSession = getCurrentUser();
+          if (localSession && localSession.role === "admin") {
+            logout();
+          } else if (localSession && localSession.role === "client") {
+            navigate({ to: "/client" });
+          }
+        }
       } else {
-        navigate({ to: "/client" });
+        const session = getCurrentUser();
+        if (session) {
+          if (session.role === "admin") {
+            navigate({ to: "/admin" });
+          } else {
+            navigate({ to: "/client" });
+          }
+        }
       }
-    }
+    };
+
+    checkSession();
   }, [navigate]);
 
   const handleClientSubmit = (e: React.FormEvent) => {
