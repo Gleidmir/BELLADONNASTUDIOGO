@@ -25,6 +25,7 @@ import {
   Copy,
   Lock,
   KeyRound,
+  RefreshCw,
 } from "lucide-react";
 import {
   AreaChart,
@@ -219,8 +220,18 @@ function AdminDashboard() {
     checkAuth();
   }, [navigate]);
 
-  const loadAllData = async () => {
-    setLoading(true);
+  // Periodic silent background refresh for appointments and stats every 10 seconds
+  useEffect(() => {
+    if (mounted) {
+      const interval = setInterval(() => {
+        loadAllData(true);
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [mounted]);
+
+  const loadAllData = async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     try {
       const [s, a, c, svcs, barbs] = await Promise.all([
         getDashboardStats(),
@@ -236,9 +247,9 @@ function AdminDashboard() {
       setBarbers(barbs);
     } catch (e) {
       console.error("Erro ao carregar dados no admin:", e);
-      toast.error("Erro ao sincronizar dados do servidor.");
+      if (!isSilent) toast.error("Erro ao sincronizar dados do servidor.");
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
@@ -659,6 +670,14 @@ function AdminDashboard() {
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-semibold text-emerald-300">Caixa Aberto</span>
             </div>
+            <button
+              onClick={() => loadAllData(false)}
+              disabled={loading}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-3 sm:px-4 py-2 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer"
+              title="Atualizar Dados"
+            >
+              <RefreshCw className={`h-4 w-4 shrink-0 ${loading ? 'animate-spin' : ''}`} /> <span className="hidden sm:inline">Atualizar</span>
+            </button>
             <button
               onClick={handleResetData}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 sm:px-4 py-2 text-xs font-bold border border-red-500/20 hover:border-transparent transition-all cursor-pointer"
