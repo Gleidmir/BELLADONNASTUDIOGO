@@ -20,10 +20,12 @@ CREATE TABLE IF NOT EXISTS public.barbers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Habilitar Row Level Security (RLS) para Barbeiros (Leitura pública, escrita autenticada)
+-- Habilitar Row Level Security (RLS) para Barbeiros (Leitura pública, escrita autenticada por tenant)
 ALTER TABLE public.barbers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Leitura pública de barbeiros" ON public.barbers FOR SELECT USING (true);
-CREATE POLICY "Escrita para admins autenticados" ON public.barbers FOR ALL TO authenticated USING (true);
+CREATE POLICY "Escrita para admins autenticados" ON public.barbers FOR ALL TO authenticated 
+    USING (tenant_id = (auth.jwt() ->> 'email'::text))
+    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
 
 -- 2. Tabela de Serviços
 CREATE TABLE IF NOT EXISTS public.services (
@@ -38,10 +40,12 @@ CREATE TABLE IF NOT EXISTS public.services (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Habilitar RLS para Serviços (Leitura pública, escrita autenticada)
+-- Habilitar RLS para Serviços (Leitura pública, escrita autenticada por tenant)
 ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Leitura pública de serviços" ON public.services FOR SELECT USING (true);
-CREATE POLICY "Escrita de serviços para admins" ON public.services FOR ALL TO authenticated USING (true);
+CREATE POLICY "Escrita de serviços para admins" ON public.services FOR ALL TO authenticated 
+    USING (tenant_id = (auth.jwt() ->> 'email'::text))
+    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
 
 -- 3. Tabela de Clientes
 CREATE TABLE IF NOT EXISTS public.clients (
@@ -57,11 +61,18 @@ CREATE TABLE IF NOT EXISTS public.clients (
 DROP INDEX IF EXISTS public.clients_phone_idx;
 CREATE UNIQUE INDEX IF NOT EXISTS clients_tenant_phone_idx ON public.clients (tenant_id, phone);
 
--- Habilitar RLS para Clientes (Qualquer um pode ler/escrever para permitir agendamentos rápidos)
+-- Habilitar RLS para Clientes (Leitura/escrita controlada por tenant)
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Permitir leitura para todos" ON public.clients FOR SELECT USING (true);
-CREATE POLICY "Permitir inserção de clientes" ON public.clients FOR INSERT WITH CHECK (true);
-CREATE POLICY "Gerenciamento total de clientes por admins" ON public.clients FOR ALL TO authenticated USING (true);
+CREATE POLICY "Permitir leitura de clientes" ON public.clients FOR SELECT 
+    USING (
+        (auth.role() = 'authenticated' AND tenant_id = (auth.jwt() ->> 'email'::text))
+        OR
+        (auth.role() = 'anon')
+    );
+CREATE POLICY "Permitir inserção de clientes" ON public.clients FOR INSERT WITH CHECK (tenant_id IS NOT NULL);
+CREATE POLICY "Gerenciamento total de clientes por admins" ON public.clients FOR ALL TO authenticated 
+    USING (tenant_id = (auth.jwt() ->> 'email'::text))
+    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
 
 -- 4. Tabela de Agendamentos
 CREATE TABLE IF NOT EXISTS public.appointments (
@@ -81,13 +92,25 @@ CREATE TABLE IF NOT EXISTS public.appointments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Habilitar RLS para Agendamentos (Todos podem criar, somente admins gerenciam tudo)
+-- Habilitar RLS para Agendamentos (Controle refinado por tenant e cliente)
 ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Permitir criar agendamentos" ON public.appointments FOR INSERT WITH CHECK (true);
-CREATE POLICY "Permitir leitura de agendamentos para todos" ON public.appointments FOR SELECT USING (true);
-CREATE POLICY "Permitir atualização de agendamentos para todos" ON public.appointments FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Permitir exclusão de agendamentos para todos" ON public.appointments FOR DELETE USING (true);
-CREATE POLICY "Gerenciamento total por admins" ON public.appointments FOR ALL TO authenticated USING (true);
+CREATE POLICY "Permitir criar agendamentos" ON public.appointments FOR INSERT WITH CHECK (tenant_id IS NOT NULL);
+CREATE POLICY "Permitir leitura de agendamentos" ON public.appointments FOR SELECT 
+    USING (
+        (auth.role() = 'authenticated' AND tenant_id = (auth.jwt() ->> 'email'::text))
+        OR
+        (auth.role() = 'anon')
+    );
+CREATE POLICY "Permitir atualização de agendamentos por admins" ON public.appointments FOR UPDATE TO authenticated 
+    USING (tenant_id = (auth.jwt() ->> 'email'::text))
+    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
+CREATE POLICY "Permitir cancelamento pelo próprio cliente" ON public.appointments FOR UPDATE TO anon 
+    USING (status = 'pending')
+    WITH CHECK (status = 'cancelled');
+CREATE POLICY "Permitir exclusão de agendamentos por admins" ON public.appointments FOR DELETE TO authenticated 
+    USING (tenant_id = (auth.jwt() ->> 'email'::text));
+CREATE POLICY "Permitir exclusão pelo próprio cliente" ON public.appointments FOR DELETE TO anon 
+    USING (client_phone IS NOT NULL);
 
 
 -- ====================================================
