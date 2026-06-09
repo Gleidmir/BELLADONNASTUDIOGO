@@ -247,6 +247,17 @@ function SignupCard() {
 
     setLoading(true);
 
+    // Initialize tenant config locally to start the 30-day trial immediately
+    if (typeof window !== "undefined") {
+      const configKey = `mbg_tenant_config_${email}`;
+      if (!window.localStorage.getItem(configKey)) {
+        window.localStorage.setItem(configKey, JSON.stringify({
+          registeredAt: new Date().toISOString(),
+          subscriptionStatus: "trial",
+        }));
+      }
+    }
+
     if (isSupabaseConfigured) {
       try {
         const { error } = await supabase.auth.signUp({
@@ -271,6 +282,11 @@ function SignupCard() {
         setLoading(false);
       }
     } else {
+      // Save password locally for local mock login
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(`mbg_local_password_${email}`, pass);
+      }
+      
       // Local fallback: log in directly using the newly registered email as the tenant ID!
       setCurrentUser({
         role: "admin",
@@ -367,12 +383,17 @@ export function LandingPage() {
             >
               Entrar
             </Link>
-            <Link
-              to="/login"
-              className="rounded-lg bg-amber-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-all whitespace-nowrap"
+            <button
+              onClick={() => {
+                const element = document.getElementById("pricing-section");
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="rounded-lg bg-amber-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-all whitespace-nowrap cursor-pointer"
             >
-              Teste Grátis
-            </Link>
+              Planos
+            </button>
           </div>
         </div>
       </header>
@@ -400,6 +421,77 @@ export function LandingPage() {
             </div>
 
 
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION */}
+      <section id="pricing-section" className="py-20 border-t border-zinc-900 bg-zinc-950/40 relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-xs font-bold text-amber-500 uppercase tracking-widest">Planos de Assinatura</h2>
+            <p className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              Escolha o melhor plano para a sua barbearia
+            </p>
+            <p className="mt-4 text-base text-zinc-400">
+              Todas as assinaturas iniciam com o período de 30 dias de teste grátis automático a partir do seu cadastro na página inicial.
+            </p>
+          </div>
+
+          {/* Pricing Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: "Mensal", price: "R$ 29,90", rawPrice: 29.90, desc: "Acesso total por 30 dias", detail: "R$ 29,90 / mês" },
+              { name: "Trimestral", price: "R$ 74,90", rawPrice: 74.90, desc: "Acesso total por 90 dias", detail: "R$ 24,96 / mês", popular: true },
+              { name: "Semestral", price: "R$ 139,90", rawPrice: 139.90, desc: "Acesso total por 180 dias", detail: "R$ 23,31 / mês" },
+              { name: "Anual", price: "R$ 239,90", rawPrice: 239.90, desc: "Acesso total por 365 dias", detail: "R$ 19,99 / mês", bestDeal: true },
+            ].map((p) => (
+              <div
+                key={p.name}
+                className={`relative flex flex-col justify-between p-6 rounded-2xl border text-left bg-zinc-900/60 transition-all ${
+                  p.popular
+                    ? "border-amber-500 ring-2 ring-amber-500/20"
+                    : "border-zinc-800"
+                }`}
+              >
+                {p.popular && (
+                  <span className="absolute -top-3 left-4 rounded-full bg-amber-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                    Mais Popular
+                  </span>
+                )}
+                {p.bestDeal && (
+                  <span className="absolute -top-3 left-4 rounded-full bg-emerald-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                    Melhor Preço
+                  </span>
+                )}
+                <div>
+                  <h3 className="text-base font-extrabold text-white tracking-wide">{p.name}</h3>
+                  <p className="text-3xl font-black text-white mt-3">{p.price}</p>
+                  <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-wider">{p.detail}</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-zinc-800 w-full space-y-4">
+                  <p className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    {p.desc}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 leading-relaxed">
+                    A ativação do plano é realizada enviando o comprovante via WhatsApp.
+                  </p>
+                  <a
+                    href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (R$ ${p.price}) para minha barbearia.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer text-center"
+                  >
+                    Adquirir Plano
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center max-w-xl mx-auto bg-zinc-900/40 border border-zinc-900 rounded-2xl p-4 text-xs text-zinc-400">
+            💡 <strong>Quer testar antes?</strong> Basta criar sua conta no formulário no topo da página. Sua barbearia ganhará <strong>30 dias de teste grátis imediatamente</strong>, sem necessidade de pagamento inicial!
           </div>
         </div>
       </section>

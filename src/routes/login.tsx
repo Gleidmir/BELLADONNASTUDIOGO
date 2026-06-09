@@ -38,11 +38,19 @@ function LoginPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const tenant = params.get("t") || params.get("barberia");
-      if (tenant) {
-        window.localStorage.setItem("mbg_client_tenant", tenant);
-        setIsClientOnly(true);
-        setActiveTab("client");
+      const isAdminOverride = params.get("admin") === "true" || params.get("role") === "admin";
+      
+      if (isAdminOverride) {
+        setIsClientOnly(false);
+        setActiveTab("admin");
+        window.localStorage.removeItem("mbg_client_tenant");
+      } else {
+        const tenant = params.get("t") || params.get("barberia") || window.localStorage.getItem("mbg_client_tenant");
+        if (tenant) {
+          window.localStorage.setItem("mbg_client_tenant", tenant);
+          setIsClientOnly(true);
+          setActiveTab("client");
+        }
       }
     }
     const session = getCurrentUser();
@@ -113,17 +121,20 @@ function LoginPage() {
         setLoading(false);
       }
     } else {
-      // Fallback local if Supabase is not configured: allow any email with password '123456'
-      if (adminPassword === "123456") {
+      // Fallback local if Supabase is not configured: check if there's a custom password saved
+      const storedPassword = typeof window !== "undefined" ? window.localStorage.getItem(`mbg_local_password_${adminEmail}`) : null;
+      const expectedPassword = storedPassword || "123456";
+      
+      if (adminPassword === expectedPassword) {
         setCurrentUser({
           role: "admin",
           name: adminEmail.split("@")[0].toUpperCase(),
           email: adminEmail,
         });
-        toast.success(`Login de teste para ${adminEmail} efetuado!`);
+        toast.success("Login efetuado com sucesso!");
         navigate({ to: "/admin" });
       } else {
-        toast.error("Para testes locais, utilize a senha padrão 123456.");
+        toast.error("Senha incorreta.");
       }
       setLoading(false);
     }
@@ -132,14 +143,16 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col justify-between antialiased">
       {/* Header / Nav */}
-      <header className="px-6 py-4 flex items-center">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-semibold"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar para o início
-        </Link>
-      </header>
+      {!isClientOnly && (
+        <header className="px-6 py-4 flex items-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-semibold"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar para o início
+          </Link>
+        </header>
+      )}
 
       {/* Main card */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
@@ -252,12 +265,7 @@ function LoginPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 flex items-start gap-2 text-xs text-amber-400">
-                <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold">Acesso de teste:</span> Use o e-mail <code className="bg-zinc-950 px-1 rounded text-white font-mono text-[10px]">admin@barberboss.com</code> e a senha <code className="bg-zinc-950 px-1 rounded text-white font-mono text-[10px]">123456</code>.
-                </div>
-              </div>
+
 
               <button
                 type="submit"

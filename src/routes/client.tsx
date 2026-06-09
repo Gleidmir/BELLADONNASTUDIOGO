@@ -99,13 +99,6 @@ function ClientDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-zinc-400 font-medium">Olá, {session.name}</span>
-            <button
-              onClick={handleLogout}
-              className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer"
-              title="Sair"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
           </div>
         </div>
       </header>
@@ -483,11 +476,6 @@ function BookingFlow({ clientPhone, clientName }: BookingFlowProps) {
             {services.length === 0 && (
               <p className="text-center text-xs text-zinc-600 py-8">Nenhum serviço cadastrado.</p>
             )}
-          </div>
-          <div className="mt-6">
-            <Link to="/" className="w-full text-center block rounded-xl bg-zinc-900 py-3.5 text-xs font-bold border border-zinc-800 text-zinc-400 hover:text-white transition-all">
-              Voltar ao Início
-            </Link>
           </div>
         </div>
       )}
