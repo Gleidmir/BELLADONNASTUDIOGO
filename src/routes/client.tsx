@@ -216,7 +216,7 @@ function BookingFlow({ clientPhone, clientName }: BookingFlowProps) {
     loadData();
   }, []);
 
-  // Load appointments dynamically when date, barber or activeTab changes
+  // Load appointments dynamically when date or barber changes
   useEffect(() => {
     if (step === "datetime") {
       const loadApts = async () => {
@@ -229,7 +229,7 @@ function BookingFlow({ clientPhone, clientName }: BookingFlowProps) {
       };
       loadApts();
     }
-  }, [step, selectedDate, selectedBarber, activeTab]);
+  }, [step, selectedDate, selectedBarber]);
 
   // Generate days slider based on selected month offset
   useEffect(() => {
