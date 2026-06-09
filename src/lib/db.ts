@@ -220,6 +220,28 @@ export const getServices = async (): Promise<Service[]> => {
         .eq("tenant_id", tenantId)
         .order("name", { ascending: true });
       if (error) throw error;
+      
+      // Se for um novo tenant e não houver nenhum serviço cadastrado no Supabase,
+      // popula com os serviços padrões do sistema
+      if (data && data.length === 0) {
+        const servicesToInsert = defaultServices.map(s => ({
+          id: `${s.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          name: s.name,
+          price: s.price,
+          duration: s.duration,
+          is_active: s.isActive,
+          tenant_id: tenantId
+        }));
+        
+        const { error: insertError } = await supabase
+          .from("services")
+          .insert(servicesToInsert);
+          
+        if (!insertError) {
+          return servicesToInsert.map(mapServiceFromDB);
+        }
+      }
+      
       return (data || []).map(mapServiceFromDB);
     } catch (e) {
       console.warn("Erro ao buscar serviços no Supabase, usando localStorage:", e);
@@ -327,6 +349,31 @@ export const getBarbers = async (): Promise<Barber[]> => {
         .select("*")
         .eq("tenant_id", tenantId);
       if (error) throw error;
+      
+      // Se for um novo tenant e não houver nenhum barbeiro cadastrado no Supabase,
+      // popula com os barbeiros padrões do sistema
+      if (data && data.length === 0) {
+        const barbersToInsert = defaultBarbers.map(b => ({
+          id: `${b.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          name: b.name,
+          avatar: b.avatar,
+          phone: b.phone,
+          work_days: JSON.stringify(b.workDays),
+          start_time: b.startTime,
+          end_time: b.endTime,
+          blocked_dates: JSON.stringify(b.blockedDates),
+          tenant_id: tenantId
+        }));
+        
+        const { error: insertError } = await supabase
+          .from("barbers")
+          .insert(barbersToInsert);
+          
+        if (!insertError) {
+          return barbersToInsert.map(mapBarberFromDB);
+        }
+      }
+      
       if (data && data.length > 0) {
         return data.map(mapBarberFromDB);
       }
