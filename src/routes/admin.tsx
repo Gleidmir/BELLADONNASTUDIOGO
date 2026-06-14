@@ -270,8 +270,10 @@ function AdminDashboard() {
       setBarbers(barbs);
       if (prof) {
         setShopProfile(prof);
-        setShopName(prof.name);
-        setShopLogoUrl(prof.logoUrl || "");
+        if (!isSilent) {
+          setShopName(prof.name);
+          setShopLogoUrl(prof.logoUrl || "");
+        }
       }
     } catch (e) {
       console.error("Erro ao carregar dados no admin:", e);
