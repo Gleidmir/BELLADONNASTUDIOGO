@@ -924,7 +924,7 @@ function AdminDashboard() {
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={stats.barberPerformance} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                          <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} />
+                          <XAxis dataKey="name" stroke="#71717a" fontSize={9} tickLine={false} interval={0} />
                           <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
                           <Tooltip
                             contentStyle={{ backgroundColor: "#18181b", borderColor: "#27272a", borderRadius: "12px", fontSize: "11px" }}
