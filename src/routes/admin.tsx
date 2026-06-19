@@ -229,14 +229,15 @@ function AdminDashboard() {
         ? (await supabase.auth.getSession()).data.session?.user?.email || "default"
         : localUser?.email || "default";
 
-      const [s, a, c, svcs, barbs, prof] = await Promise.all([
-        getDashboardStats(),
+      const [a, c, svcs, barbs, prof] = await Promise.all([
         getAppointments(),
         getClients(),
         getServices(),
         getBarbers(),
         getBarberShopProfile(tenantEmail),
       ]);
+      const s = await getDashboardStats(a, c, barbs);
+
       setStats(s);
       setAppointments(a);
       setClients(c);
@@ -248,6 +249,13 @@ function AdminDashboard() {
           setShopName(prof.name);
           setShopLogoUrl(prof.logoUrl || "");
         }
+      }
+
+      // Atualiza o status da assinatura na interface imediatamente
+      refreshSubscriptionStatus();
+
+      if (!isSilent) {
+        toast.success("Dados atualizados com sucesso!");
       }
     } catch (e) {
       console.error("Erro ao carregar dados no admin:", e);
@@ -401,6 +409,11 @@ function AdminDashboard() {
         });
         setEditingBarber(null);
       } else {
+        if (barbers.length >= 5) {
+          toast.error("Limite máximo de 5 barbeiros atingido! Se precisar de mais, entre em contato com o suporte.");
+          setLoading(false);
+          return;
+        }
         await addBarber({
           name: barberName,
           avatar: avatarUrl,

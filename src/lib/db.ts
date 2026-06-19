@@ -60,6 +60,14 @@ const isServer = typeof window === "undefined";
 
 export const getCurrentTenantId = (): string => {
   if (isServer) return "default";
+
+  // Se estiver na rota do cliente, prioriza o tenant da barbearia selecionada (mbg_client_tenant)
+  const isClientRoute = typeof window !== "undefined" && window.location.pathname.includes("/client");
+  if (isClientRoute) {
+    const clientTenant = window.localStorage.getItem("mbg_client_tenant");
+    if (clientTenant) return clientTenant;
+  }
+
   const sessionItem = window.localStorage.getItem("mbg_session");
   if (sessionItem) {
     try {
@@ -219,6 +227,8 @@ export const initDB = () => {
   }
 };
 
+let isSeedingServices: Promise<any> | null = null;
+
 // --- SERVICES ---
 export const getServices = async (): Promise<Service[]> => {
   if (isSupabaseConfigured) {
@@ -232,23 +242,41 @@ export const getServices = async (): Promise<Service[]> => {
       if (error) throw error;
       
       // Se for um novo tenant e não houver nenhum serviço cadastrado no Supabase,
-      // popula com os serviços padrões do sistema
+      // popula com os serviços padrões do sistema de forma segura contra concorrência
       if (data && data.length === 0) {
-        const servicesToInsert = defaultServices.map(s => ({
-          id: `${s.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          name: s.name,
-          price: s.price,
-          duration: s.duration,
-          is_active: s.isActive,
-          tenant_id: tenantId
-        }));
-        
-        const { error: insertError } = await supabase
-          .from("services")
-          .insert(servicesToInsert);
+        if (isSeedingServices) {
+          await isSeedingServices;
+          const { data: refetchedData } = await supabase
+            .from("services")
+            .select("*")
+            .eq("tenant_id", tenantId)
+            .order("name", { ascending: true });
+          return (refetchedData || []).map(mapServiceFromDB);
+        }
+
+        isSeedingServices = (async () => {
+          const servicesToInsert = defaultServices.map(s => ({
+            id: `${s.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+            name: s.name,
+            price: s.price,
+            duration: s.duration,
+            is_active: s.isActive,
+            tenant_id: tenantId
+          }));
           
-        if (!insertError) {
-          return servicesToInsert.map(mapServiceFromDB);
+          const { error: insertError } = await supabase
+            .from("services")
+            .insert(servicesToInsert);
+            
+          if (insertError) throw insertError;
+          return servicesToInsert;
+        })();
+
+        try {
+          const inserted = await isSeedingServices;
+          return inserted.map(mapServiceFromDB);
+        } finally {
+          isSeedingServices = null;
         }
       }
       
@@ -349,6 +377,8 @@ export const deleteService = async (id: string): Promise<void> => {
   toast.success("Serviço removido localmente!");
 };
 
+let isSeedingBarbers: Promise<any> | null = null;
+
 // --- BARBERS ---
 export const getBarbers = async (): Promise<Barber[]> => {
   if (isSupabaseConfigured) {
@@ -361,26 +391,43 @@ export const getBarbers = async (): Promise<Barber[]> => {
       if (error) throw error;
       
       // Se for um novo tenant e não houver nenhum barbeiro cadastrado no Supabase,
-      // popula com os barbeiros padrões do sistema
+      // popula com os barbeiros padrões do sistema de forma segura contra concorrência
       if (data && data.length === 0) {
-        const barbersToInsert = defaultBarbers.map(b => ({
-          id: `${b.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          name: b.name,
-          avatar: b.avatar,
-          phone: b.phone,
-          work_days: JSON.stringify(b.workDays),
-          start_time: b.startTime,
-          end_time: b.endTime,
-          blocked_dates: JSON.stringify(b.blockedDates),
-          tenant_id: tenantId
-        }));
-        
-        const { error: insertError } = await supabase
-          .from("barbers")
-          .insert(barbersToInsert);
+        if (isSeedingBarbers) {
+          await isSeedingBarbers;
+          const { data: refetchedData } = await supabase
+            .from("barbers")
+            .select("*")
+            .eq("tenant_id", tenantId);
+          return (refetchedData || []).map(mapBarberFromDB);
+        }
+
+        isSeedingBarbers = (async () => {
+          const barbersToInsert = defaultBarbers.map(b => ({
+            id: `${b.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+            name: b.name,
+            avatar: b.avatar,
+            phone: b.phone,
+            work_days: JSON.stringify(b.workDays),
+            start_time: b.startTime,
+            end_time: b.endTime,
+            blocked_dates: JSON.stringify(b.blockedDates),
+            tenant_id: tenantId
+          }));
           
-        if (!insertError) {
-          return barbersToInsert.map(mapBarberFromDB);
+          const { error: insertError } = await supabase
+            .from("barbers")
+            .insert(barbersToInsert);
+            
+          if (insertError) throw insertError;
+          return barbersToInsert;
+        })();
+
+        try {
+          const inserted = await isSeedingBarbers;
+          return inserted.map(mapBarberFromDB);
+        } finally {
+          isSeedingBarbers = null;
         }
       }
       
@@ -396,6 +443,12 @@ export const getBarbers = async (): Promise<Barber[]> => {
 };
 
 export const addBarber = async (barber: Omit<Barber, "id">): Promise<Barber> => {
+  const currentBarbers = await getBarbers();
+  if (currentBarbers.length >= 5) {
+    toast.error("Limite máximo de 5 barbeiros atingido.");
+    throw new Error("Limite de 5 barbeiros atingido.");
+  }
+
   const newBarber: Barber = {
     ...barber,
     id: `b_${Date.now()}`,
@@ -1067,10 +1120,14 @@ export interface DashboardStats {
   servicePopularity: { name: string; valor: number }[];
 }
 
-export const getDashboardStats = async (): Promise<DashboardStats> => {
-  const appointments = await getAppointments();
-  const clients = await getClients();
-  const barbers = await getBarbers();
+export const getDashboardStats = async (
+  preFetchedAppointments?: Appointment[],
+  preFetchedClients?: Client[],
+  preFetchedBarbers?: Barber[]
+): Promise<DashboardStats> => {
+  const appointments = preFetchedAppointments || await getAppointments();
+  const clients = preFetchedClients || await getClients();
+  const barbers = preFetchedBarbers || await getBarbers();
 
   const now = new Date();
   const year = now.getFullYear();
@@ -1173,7 +1230,7 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
 };
 
 // --- BARBER SHOP PROFILE ---
-export const getBarberShopProfile = async (tenantId: string): Promise<BarberShopProfile> => {
+export const getBarberShopProfile = async (tenantId: string): Promise<BarberShopProfile | null> => {
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -1215,46 +1272,18 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           window.localStorage.setItem(configKey, JSON.stringify(updatedConfig));
         }
         return prof;
-      } else if (tenantId !== "default") {
-        // Se não existir o perfil no banco ainda, cria um padrão automaticamente no Supabase
-        const defaultName = tenantId.split("@")[0].toUpperCase() + " BARBEARIA";
-        const { data: newData, error: insertError } = await supabase
-          .from("barber_shops")
-          .insert({
-            tenant_id: tenantId,
-            name: defaultName,
-            subscription_status: "expired",
-            subscription_plan: "mensal",
-          })
-          .select()
-          .single();
-          
-        if (!insertError && newData) {
-          const prof: BarberShopProfile = {
-            tenantId: newData.tenant_id,
-            name: newData.name,
-            logoUrl: newData.logo_url || undefined,
-            createdAt: newData.created_at,
-            subscriptionPlan: newData.subscription_plan || "mensal",
-            subscriptionStatus: newData.subscription_status || "expired",
-            subscriptionExpiresAt: newData.subscription_expires_at || undefined,
-          };
-          if (!isServer) {
-            window.localStorage.setItem(`mbg_profile_${tenantId}`, JSON.stringify(prof));
-            
-            // Sincroniza o TenantConfig no localStorage
-            const configKey = `mbg_tenant_config_${tenantId}`;
-            const updatedConfig: TenantConfig = {
-              registeredAt: newData.created_at || new Date().toISOString(),
-              subscriptionPlan: newData.subscription_plan || undefined,
-              subscriptionStatus: newData.subscription_status || "expired",
-              subscriptionExpiresAt: newData.subscription_expires_at || undefined,
-            };
-            window.localStorage.setItem(configKey, JSON.stringify(updatedConfig));
-          }
-          return prof;
+      } else {
+        // Se foi excluído do servidor, limpa as chaves locais associadas a esse tenant
+        if (!isServer) {
+          window.localStorage.removeItem(`mbg_profile_${tenantId}`);
+          window.localStorage.removeItem(`mbg_tenant_config_${tenantId}`);
+          window.localStorage.removeItem(`mbg_barbers_${tenantId}`);
+          window.localStorage.removeItem(`mbg_services_${tenantId}`);
+          window.localStorage.removeItem(`mbg_clients_${tenantId}`);
+          window.localStorage.removeItem(`mbg_appointments_${tenantId}`);
         }
       }
+      return null;
     } catch (e) {
       console.warn("Erro ao buscar perfil da barbearia no Supabase:", e);
     }
@@ -1271,16 +1300,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
       }
     }
   }
-
-  // Perfil padrão caso não exista
-  const config = getTenantConfig();
-  return {
-    tenantId,
-    name: tenantId === "default" ? "Meu Barbeiro GO" : tenantId.split("@")[0].toUpperCase() + " BARBEARIA",
-    subscriptionPlan: config.subscriptionPlan || "mensal",
-    subscriptionStatus: config.subscriptionStatus || "expired",
-    subscriptionExpiresAt: config.subscriptionExpiresAt || undefined,
-  };
+  return null;
 };
 
 export const updateBarberShopProfile = async (profile: BarberShopProfile): Promise<void> => {

@@ -65,7 +65,12 @@ function LoginPage() {
     const checkSession = async () => {
       if (isSupabaseConfigured) {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
+        
+        // Só redireciona para o admin se não for um link direto de cliente (t ou barberia)
+        const params = new URLSearchParams(window.location.search);
+        const isClientLink = params.get("t") || params.get("barberia");
+
+        if (session && !isClientLink) {
           setCurrentUser({
             role: "admin",
             name: session.user?.user_metadata?.name || "Barbeiro Administrador",
@@ -176,16 +181,14 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col justify-between antialiased">
       {/* Header / Nav */}
-      {!isClientOnly && (
-        <header className="px-6 py-4 flex items-center">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-semibold"
-          >
-            <ArrowLeft className="h-4 w-4" /> Voltar para o início
-          </Link>
-        </header>
-      )}
+      <header className="px-6 py-4 flex items-center">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-semibold"
+        >
+          <ArrowLeft className="h-4 w-4" /> Voltar para o início
+        </Link>
+      </header>
 
       {/* Main card */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
@@ -280,6 +283,13 @@ function LoginPage() {
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "AGENDAR MEU HORÁRIO →"}
               </button>
+
+              <Link
+                to="/"
+                className="block text-center text-xs text-zinc-500 hover:text-white transition-colors mt-4 font-semibold"
+              >
+                Cancelar e sair
+              </Link>
             </form>
           ) : (
             /* ADMIN FORM */

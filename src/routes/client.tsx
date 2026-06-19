@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   RotateCcw,
   Trash2,
+  X,
 } from "lucide-react";
 import { BarberGoLogo } from "../components/ui/logo";
 import { toast } from "sonner";
@@ -32,6 +33,8 @@ import {
   resetLocalDB,
   getBarberShopProfile,
   type BarberShopProfile,
+  checkSubscriptionStatus,
+  type SubscriptionCheck,
 } from "../lib/db";
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -57,6 +60,8 @@ function ClientDashboard() {
   const [session, setSession] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"book" | "my-appointments">("book");
   const [shopProfile, setShopProfile] = useState<BarberShopProfile | null>(null);
+  const [subCheck, setSubCheck] = useState<SubscriptionCheck | null>(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   // Load session
   useEffect(() => {
@@ -71,10 +76,31 @@ function ClientDashboard() {
       }
     }
     if (tenant) {
-      getBarberShopProfile(tenant).then(setShopProfile);
+      getBarberShopProfile(tenant)
+        .then((prof) => {
+          setShopProfile(prof);
+          const check = checkSubscriptionStatus();
+          setSubCheck(check);
+          setProfileLoaded(true);
+        })
+        .catch(() => {
+          setProfileLoaded(true);
+        });
+    } else {
+      setProfileLoaded(true);
     }
+
     const user = getCurrentUser();
-    if (!user || user.role !== "client") {
+    if (!user) {
+      navigate({ to: tenant ? `/login?t=${tenant}` : "/login" });
+    } else if (user.role === "admin") {
+      // Permite que o administrador visualize a página do cliente como visualização de teste
+      setSession({
+        role: "client",
+        name: `${user.name} (Visualização)`,
+        phone: "5562993299120",
+      });
+    } else if (user.role !== "client") {
       navigate({ to: tenant ? `/login?t=${tenant}` : "/login" });
     } else {
       setSession(user);
@@ -87,12 +113,115 @@ function ClientDashboard() {
     navigate({ to: tenant ? `/login?t=${tenant}` : "/login" });
   };
 
+  const getTenantParam = () => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("t") || params.get("barberia") || window.localStorage.getItem("mbg_client_tenant") || "";
+    }
+    return "";
+  };
+  const tenant = getTenantParam();
 
-
-  if (!session) {
+  if (!profileLoaded || (!session && tenant)) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">
         <LoaderComponent />
+      </div>
+    );
+  }
+
+  if (profileLoaded && !shopProfile && tenant) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white antialiased flex flex-col justify-between">
+        {/* Top Navbar */}
+        <header className="border-b border-zinc-900/60 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-3 pb-3">
+          <div className="mx-auto max-w-lg px-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <BarberGoLogo className="w-8 h-8" />
+              <span className="text-sm font-extrabold tracking-tight">Meu Barbeiro GO</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Not Found Message Body */}
+        <main className="flex-1 mx-auto w-full max-w-lg px-4 py-12 flex flex-col justify-center items-center text-center">
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 mb-6">
+            <X className="h-8 w-8 text-red-500" />
+          </div>
+          <h1 className="text-lg font-extrabold text-white tracking-tight">
+            Estabelecimento Não Encontrado
+          </h1>
+          <p className="text-zinc-400 text-xs mt-3 max-w-xs leading-relaxed">
+            Esta barbearia não foi encontrada em nossa base de dados ou foi desativada pelo administrador.
+          </p>
+        </main>
+
+        {/* Footer */}
+        <footer className="py-4 text-center text-[10px] text-zinc-600 border-t border-zinc-900 bg-zinc-950">
+          Desenvolvido para Meu Barbeiro GO — Todos os direitos reservados.
+        </footer>
+      </div>
+    );
+  }
+
+  if (subCheck?.status === "expired") {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white antialiased flex flex-col justify-between">
+        {/* Top Navbar */}
+        <header className="border-b border-zinc-900/60 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-3 pb-3">
+          <div className="mx-auto max-w-lg flex items-center justify-between px-4">
+            <div className="flex items-center gap-2.5">
+              {shopProfile?.logoUrl ? (
+                <img
+                  src={shopProfile.logoUrl}
+                  alt={shopProfile.name}
+                  className="w-8 h-8 rounded-full object-cover border border-amber-500/50 shadow-sm"
+                />
+              ) : (
+                <BarberGoLogo className="w-8 h-8" />
+              )}
+              <span className="text-sm font-extrabold tracking-tight">
+                {shopProfile ? shopProfile.name : "Meu Barbeiro GO"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-zinc-400 font-medium">Olá, {session.name}</span>
+              <button
+                onClick={handleLogout}
+                className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 transition-colors cursor-pointer flex items-center justify-center"
+                title="Sair"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Expired Message Body */}
+        <main className="flex-1 mx-auto w-full max-w-lg px-4 py-12 flex flex-col justify-center items-center text-center">
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 mb-6 animate-pulse">
+            <AlertTriangle className="h-8 w-8" />
+          </div>
+          <h1 className="text-lg font-extrabold text-white tracking-tight">
+            Agendamento Indisponível
+          </h1>
+          <p className="text-zinc-400 text-xs mt-3 max-w-xs leading-relaxed">
+            Esta barbearia está temporariamente indisponível para novos agendamentos online. Por favor, entre em contato diretamente com o estabelecimento para mais informações.
+          </p>
+          <a
+            href={`https://wa.me/${DEFAULT_ADMIN_PHONE}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 text-xs font-bold transition-all cursor-pointer shadow-lg shadow-emerald-600/10 active:scale-95"
+          >
+            <WhatsAppIcon className="h-4 w-4 fill-current shrink-0" /> Falar com o Estabelecimento
+          </a>
+        </main>
+
+        {/* Footer */}
+        <footer className="py-4 text-center text-[10px] text-zinc-600 border-t border-zinc-900 bg-zinc-950">
+          Desenvolvido para Meu Barbeiro GO — Todos os direitos reservados.
+        </footer>
       </div>
     );
   }
