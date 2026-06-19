@@ -252,3 +252,49 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 
+-- 4. Função de trigger da tabela barber_shops para controle e validação de assinaturas
+CREATE OR REPLACE FUNCTION public.check_barber_shop_subscription()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Para novas inserções: força o status 'expired' (Inativo) e plano mensal padrão
+  IF TG_OP = 'INSERT' THEN
+    IF (NEW.subscription_status IS DISTINCT FROM 'expired' OR NEW.subscription_plan IS DISTINCT FROM 'mensal' OR NEW.subscription_expires_at IS DISTINCT FROM NULL) THEN
+      IF (auth.jwt() ->> 'email'::text) IS DISTINCT FROM 'gleidmircristino@hotmail.com' THEN
+        NEW.subscription_status := 'expired';
+        NEW.subscription_plan := 'mensal';
+        NEW.subscription_expires_at := NULL;
+      END IF;
+    END IF;
+  END IF;
+
+  -- Para atualizações: reverte silenciosamente qualquer tentativa de alteração nas assinaturas
+  IF TG_OP = 'UPDATE' THEN
+    IF (NEW.subscription_plan IS DISTINCT FROM OLD.subscription_plan OR
+        NEW.subscription_status IS DISTINCT FROM OLD.subscription_status OR
+        NEW.subscription_expires_at IS DISTINCT FROM OLD.subscription_expires_at) THEN
+
+      IF (auth.jwt() ->> 'email'::text) IS DISTINCT FROM 'gleidmircristino@hotmail.com' THEN
+        NEW.subscription_plan := OLD.subscription_plan;
+        NEW.subscription_status := OLD.subscription_status;
+        NEW.subscription_expires_at := OLD.subscription_expires_at;
+      END IF;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Revoga execução pública por segurança
+REVOKE EXECUTE ON FUNCTION public.check_barber_shop_subscription() FROM PUBLIC, anon, authenticated;
+
+-- Associa o trigger à tabela barber_shops
+DROP TRIGGER IF EXISTS trg_check_barber_shop_subscription ON public.barber_shops;
+CREATE TRIGGER trg_check_barber_shop_subscription
+  BEFORE INSERT OR UPDATE ON public.barber_shops
+  FOR EACH ROW EXECUTE FUNCTION public.check_barber_shop_subscription();
+
+
+
