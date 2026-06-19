@@ -29,6 +29,7 @@ export function MasterAdminPanel() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedShop, setExpandedShop] = useState<string | null>(null);
+  const [showCodes, setShowCodes] = useState(false);
 
   const loadShops = async () => {
     setLoading(true);
@@ -266,41 +267,58 @@ export function MasterAdminPanel() {
         </button>
       </div>
 
-      {/* Códigos de Ativação Rápidos */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {[
-          { label: "Mensal", code: "ATIVA_MEN_MBG", days: "30 dias" },
-          { label: "Trimestral", code: "ATIVA_TRI_MBG", days: "90 dias" },
-          { label: "Semestral", code: "ATIVA_SEM_MBG", days: "180 dias" },
-          { label: "Anual", code: "ATIVA_ANU_MBG", days: "365 dias" },
-          { label: "VIP Vitalício", code: "MASTER_MBG_VIP", days: "Permanente" },
-        ].map((item, idx) => (
-          <div key={idx} className="bg-zinc-900/40 ring-1 ring-zinc-800 rounded-2xl p-4 flex flex-col justify-between gap-2.5">
-            <div className="text-left">
-              <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider">{item.label} ({item.days})</span>
-              <div className="font-mono text-xs text-amber-500 mt-1 select-all font-bold">{item.code}</div>
-            </div>
-            <div className="flex gap-1">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(item.code);
-                  toast.success("Código copiado!");
-                }}
-                className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-1.5 text-[10px] font-bold transition-all cursor-pointer"
-                title="Copiar Código"
-              >
-                <Copy className="h-3 w-3" /> Código
-              </button>
-              <button
-                onClick={() => copyActivationLink(null as any, item.code)}
-                className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-1.5 text-[10px] font-bold transition-all cursor-pointer"
-                title="Copiar Link de Ativação Direta"
-              >
-                <ExternalLink className="h-3 w-3" /> Link
-              </button>
-            </div>
+      {/* Seção retrátil de Códigos de Reativação */}
+      <div className="bg-zinc-900/40 ring-1 ring-zinc-800 rounded-3xl p-6">
+        <button
+          onClick={() => setShowCodes(!showCodes)}
+          className="w-full flex items-center justify-between text-left focus:outline-none"
+        >
+          <span className="text-sm font-black tracking-tight text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-amber-500" />
+            CÓDIGOS DE REATIVAÇÃO
+          </span>
+          <div className="text-zinc-500 hover:text-white transition-colors">
+            {showCodes ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </div>
-        ))}
+        </button>
+        
+        {showCodes && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-200">
+            {[
+              { label: "MENSAL", code: "ATIVA_MEN_MBG", days: "30 DIAS" },
+              { label: "TRIMESTRAL", code: "ATIVA_TRI_MBG", days: "90 DIAS" },
+              { label: "SEMESTRAL", code: "ATIVA_SEM_MBG", days: "180 DIAS" },
+              { label: "ANUAL", code: "ATIVA_ANU_MBG", days: "365 DIAS" },
+              { label: "VIP VITALÍCIO", code: "MASTER_MBG_VIP", days: "PERMANENTE" },
+            ].map((item, idx) => (
+              <div key={idx} className="bg-zinc-950 ring-1 ring-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between gap-2.5">
+                <div className="text-left">
+                  <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider">{item.label} ({item.days})</span>
+                  <div className="font-mono text-xs text-amber-500 mt-1 select-all font-bold">{item.code}</div>
+                </div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(item.code);
+                      toast.success("Código copiado!");
+                    }}
+                    className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-zinc-300 py-1.5 text-[10px] font-bold transition-all cursor-pointer border border-zinc-800"
+                    title="Copiar Código"
+                  >
+                    <Copy className="h-3 w-3" /> CÓDIGO
+                  </button>
+                  <button
+                    onClick={() => copyActivationLink(null as any, item.code)}
+                    className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-zinc-300 py-1.5 text-[10px] font-bold transition-all cursor-pointer border border-zinc-800"
+                    title="Copiar Link de Ativação Direta"
+                  >
+                    <ExternalLink className="h-3 w-3" /> LINK
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Listagem e Busca */}
@@ -401,65 +419,76 @@ export function MasterAdminPanel() {
                     <div className="h-px bg-zinc-900" />
 
                     {/* Ações de Licenciamento */}
-                    <div className="space-y-3">
-                      <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider block">Modificar Licença (Salva direto na nuvem)</span>
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => handleExtendSubscription(shop, 30, "mensal")}
-                          className="rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-3 py-2 text-xs font-bold border border-zinc-800 transition-all cursor-pointer active:scale-95"
-                        >
-                          +30 Dias
-                        </button>
-                        <button
-                          onClick={() => handleExtendSubscription(shop, 90, "trimestral")}
-                          className="rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-3 py-2 text-xs font-bold border border-zinc-800 transition-all cursor-pointer active:scale-95"
-                        >
-                          +90 Dias (Trimestral)
-                        </button>
-                        <button
-                          onClick={() => handleExtendSubscription(shop, 180, "semestral")}
-                          className="rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-3 py-2 text-xs font-bold border border-zinc-800 transition-all cursor-pointer active:scale-95"
-                        >
-                          +180 Dias (Semestral)
-                        </button>
-                        <button
-                          onClick={() => handleExtendSubscription(shop, 365, "anual")}
-                          className="rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-3 py-2 text-xs font-bold border border-zinc-800 transition-all cursor-pointer active:scale-95"
-                        >
-                          +365 Dias (Anual)
-                        </button>
-                        <button
-                          onClick={() => handleSetVIP(shop)}
-                          className="rounded-xl bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white px-3 py-2 text-xs font-bold border border-purple-500/20 hover:border-transparent transition-all cursor-pointer active:scale-95"
-                        >
-                          Tornar VIP / Vitalício
-                        </button>
+                    <div className="space-y-4">
+                      <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider block">
+                        MODIFICAR LICENÇA (SALVA DIRETO NA NUVEM)
+                      </span>
+                      
+                      {/* Grid de dias - 2 colunas */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Coluna da esquerda: verdes */}
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleExtendSubscription(shop, 30, "mensal")}
+                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
+                          >
+                            +30 DIAS
+                          </button>
+                          <button
+                            onClick={() => handleExtendSubscription(shop, 90, "trimestral")}
+                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
+                          >
+                            +90 DIAS
+                          </button>
+                        </div>
+                        {/* Coluna da direita: amarelos */}
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleExtendSubscription(shop, 180, "semestral")}
+                            className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                          >
+                            +180 DIAS
+                          </button>
+                          <button
+                            onClick={() => handleExtendSubscription(shop, 365, "anual")}
+                            className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                          >
+                            +365 DIAS
+                          </button>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 pt-1">
+                      {/* Botões centralizados e empilhados um embaixo do outro */}
+                      <div className="flex flex-col items-center gap-2 w-full max-w-md mx-auto pt-2">
+                        <button
+                          onClick={() => handleSetVIP(shop)}
+                          className="w-full rounded-xl bg-purple-600 hover:bg-purple-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-purple-600/10 uppercase"
+                        >
+                          TORNAR VIP / VITALÍCIO
+                        </button>
                         <button
                           onClick={() => handleSetTrial(shop)}
-                          className="rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-500 hover:text-zinc-950 px-3 py-2 text-xs font-bold border border-amber-500/20 hover:border-transparent transition-all cursor-pointer active:scale-95"
+                          className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
                         >
-                          Redefinir para Teste Grátis (Trial)
+                          REDEFINIR PARA TESTE GRÁTIS (TRIAL)
                         </button>
                         <button
                           onClick={() => handleExpireSubscription(shop)}
-                          className="rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 py-2 text-xs font-bold border border-red-500/20 hover:border-transparent transition-all cursor-pointer active:scale-95"
+                          className="w-full rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase"
                         >
-                          Desativar Licença (Inativa)
+                          DESATIVAR LICENÇA (INATIVA)
                         </button>
                         <button
                           onClick={() => handleDeleteShop(shop)}
-                          className="rounded-xl bg-red-600 hover:bg-red-500 text-white px-3 py-2 text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1"
+                          className="w-full rounded-xl bg-red-600 hover:bg-red-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase flex items-center justify-center gap-1.5"
                         >
-                          <Trash2 className="h-3.5 w-3.5 shrink-0" /> Excluir Barbearia
+                          <Trash2 className="h-4 w-4 shrink-0" /> EXCLUIR BARBEARIA
                         </button>
                         <button
                           onClick={() => copyWhatsAppMessage(shop)}
-                          className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-4.5 py-2 text-xs font-black transition-all cursor-pointer active:scale-95 ml-auto"
+                          className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase"
                         >
-                          Copiar Mensagem WhatsApp
+                          COPIAR MENSAGEM WHATSAPP
                         </button>
                       </div>
                     </div>
