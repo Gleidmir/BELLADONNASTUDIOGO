@@ -116,8 +116,6 @@ function AdminDashboard() {
   // Subscription management state
   const [subCheck, setSubCheck] = useState<{ status: "trial" | "active" | "expired"; daysLeft: number } | null>(null);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [activationCode, setActivationCode] = useState("");
-  const [activating, setActivating] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"mensal" | "trimestral" | "semestral" | "anual">("mensal");
 
   const refreshSubscriptionStatus = () => {
@@ -131,32 +129,6 @@ function AdminDashboard() {
       toast.success("Chave Pix (Celular) copiada para a área de transferência!");
     } catch (e) {
       toast.error("Erro ao copiar. A chave é: 62993299120");
-    }
-  };
-
-  const handleActivate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!activationCode.trim()) {
-      toast.error("Por favor, digite o código de ativação.");
-      return;
-    }
-
-    setActivating(true);
-    try {
-      const success = await activateSubscription(activationCode);
-      if (success) {
-        toast.success("Assinatura ativada com sucesso!");
-        setActivationCode("");
-        setShowSubscriptionModal(false);
-        refreshSubscriptionStatus();
-      } else {
-        toast.error("Código de ativação inválido. Entre em contato com o suporte.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao processar ativação.");
-    } finally {
-      setActivating(false);
     }
   };
 
@@ -246,31 +218,6 @@ function AdminDashboard() {
         refreshSubscriptionStatus();
       }, 10000);
       return () => clearInterval(interval);
-    }
-  }, [mounted]);
-
-  // Automatic activation via URL parameter
-  useEffect(() => {
-    if (mounted) {
-      const params = new URLSearchParams(window.location.search);
-      const urlCode = params.get("activate_code") || params.get("code");
-      if (urlCode) {
-        setActivating(true);
-        activateSubscription(urlCode).then((success) => {
-          if (success) {
-            toast.success("Assinatura ativada automaticamente com sucesso!");
-            refreshSubscriptionStatus();
-            // Limpa o parâmetro da URL sem recarregar a página
-            const newUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
-          } else {
-            toast.error("Código de ativação da URL inválido.");
-          }
-          setActivating(false);
-        }).catch(() => {
-          setActivating(false);
-        });
-      }
     }
   }, [mounted]);
 
@@ -745,10 +692,6 @@ function AdminDashboard() {
           <SubscriptionSection
             selectedPlan={selectedPlan}
             setSelectedPlan={setSelectedPlan}
-            activationCode={activationCode}
-            setActivationCode={setActivationCode}
-            activating={activating}
-            handleActivate={handleActivate}
             handleCopyPixKey={handleCopyPixKey}
           />
         </main>
@@ -1897,10 +1840,6 @@ function AdminDashboard() {
             <SubscriptionSection
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
-              activationCode={activationCode}
-              setActivationCode={setActivationCode}
-              activating={activating}
-              handleActivate={handleActivate}
               handleCopyPixKey={handleCopyPixKey}
             />
           </div>
@@ -1914,18 +1853,10 @@ function AdminDashboard() {
 function SubscriptionSection({
   selectedPlan,
   setSelectedPlan,
-  activationCode,
-  setActivationCode,
-  activating,
-  handleActivate,
   handleCopyPixKey
 }: {
   selectedPlan: "mensal" | "trimestral" | "semestral" | "anual";
   setSelectedPlan: (plan: "mensal" | "trimestral" | "semestral" | "anual") => void;
-  activationCode: string;
-  setActivationCode: (code: string) => void;
-  activating: boolean;
-  handleActivate: (e: React.FormEvent) => void;
   handleCopyPixKey: () => void;
 }) {
   const plans = [
@@ -2058,40 +1989,6 @@ function SubscriptionSection({
         </div>
       </div>
 
-      {/* Activation Form */}
-      <form onSubmit={handleActivate} className="bg-zinc-900/60 border border-zinc-900 rounded-3xl p-6 flex flex-col md:flex-row items-end gap-4 animate-fade-in">
-        <div className="flex-1 w-full space-y-2 text-left">
-          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-            <KeyRound className="h-4 w-4 text-amber-500" />
-            Inserir Código de Ativação
-          </label>
-          <p className="text-[10px] text-zinc-500">
-            Digite o código fornecido pelo suporte após o envio do comprovante para liberar o seu acesso.
-          </p>
-          <input
-            type="text"
-            required
-            value={activationCode}
-            onChange={(e) => setActivationCode(e.target.value)}
-            placeholder="Ex: ATIVA_MEN_MBG"
-            className="w-full rounded-2xl bg-zinc-950 px-4 py-3.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={activating}
-          className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-8 py-3.5 text-xs font-bold transition-all shadow shadow-amber-500/10 hover:shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
-        >
-          {activating ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-zinc-950" />
-          ) : (
-            <>
-              <Check className="h-4 w-4" />
-              <span>Ativar Conta</span>
-            </>
-          )}
-        </button>
-      </form>
     </div>
   );
 }

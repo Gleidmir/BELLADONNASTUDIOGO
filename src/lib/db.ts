@@ -1196,7 +1196,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           logoUrl: data.logo_url || undefined,
           createdAt: data.created_at,
           subscriptionPlan: data.subscription_plan || "mensal",
-          subscriptionStatus: data.subscription_status || "trial",
+          subscriptionStatus: data.subscription_status || "expired",
           subscriptionExpiresAt: data.subscription_expires_at || undefined,
         };
         if (!isServer) {
@@ -1205,7 +1205,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           // Sincroniza o TenantConfig no localStorage
           const configKey = `mbg_tenant_config_${tenantId}`;
           const currentConfigStr = window.localStorage.getItem(configKey);
-          let currentConfig = { registeredAt: data.created_at || new Date().toISOString(), subscriptionStatus: "trial" as const };
+          let currentConfig = { registeredAt: data.created_at || new Date().toISOString(), subscriptionStatus: "expired" as const };
           if (currentConfigStr) {
             try {
               currentConfig = JSON.parse(currentConfigStr);
@@ -1214,7 +1214,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           const updatedConfig: TenantConfig = {
             registeredAt: data.created_at || currentConfig.registeredAt,
             subscriptionPlan: data.subscription_plan || undefined,
-            subscriptionStatus: data.subscription_status || "trial",
+            subscriptionStatus: data.subscription_status || "expired",
             subscriptionExpiresAt: data.subscription_expires_at || undefined,
           };
           window.localStorage.setItem(configKey, JSON.stringify(updatedConfig));
@@ -1329,7 +1329,7 @@ export const getAllBarberShops = async (): Promise<BarberShopProfile[]> => {
         logoUrl: d.logo_url || undefined,
         createdAt: d.created_at,
         subscriptionPlan: d.subscription_plan || "mensal",
-        subscriptionStatus: d.subscription_status || "trial",
+        subscriptionStatus: d.subscription_status || "expired",
         subscriptionExpiresAt: d.subscription_expires_at || undefined,
       }));
     } catch (e) {

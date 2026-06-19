@@ -182,7 +182,7 @@ export function MasterAdminPanel() {
   );
 
   const getStatusBadge = (shop: BarberShopProfile) => {
-    const status = shop.subscriptionStatus || "trial";
+    const status = shop.subscriptionStatus || "expired";
     const plan = shop.subscriptionPlan || "mensal";
 
     if (plan === "master") {
