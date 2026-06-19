@@ -156,8 +156,8 @@ CREATE TABLE IF NOT EXISTS public.barber_shops (
 ALTER TABLE public.barber_shops ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Leitura pública de perfis" ON public.barber_shops FOR SELECT USING (true);
 CREATE POLICY "Escrita de perfis para admins" ON public.barber_shops FOR ALL TO authenticated 
-    USING (tenant_id = (auth.jwt() ->> 'email'::text))
-    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
+    USING (tenant_id = (auth.jwt() ->> 'email'::text) OR (auth.jwt() ->> 'email'::text) = 'gleidmircristino@hotmail.com')
+    WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text) OR (auth.jwt() ->> 'email'::text) = 'gleidmircristino@hotmail.com');
 
 
 -- ====================================================

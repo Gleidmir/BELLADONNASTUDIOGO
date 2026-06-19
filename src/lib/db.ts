@@ -869,7 +869,7 @@ export interface TenantConfig {
 
 export const getTenantConfig = (): TenantConfig => {
   if (isServer) {
-    return { registeredAt: new Date().toISOString(), subscriptionStatus: "trial" };
+    return { registeredAt: new Date().toISOString(), subscriptionStatus: "expired" };
   }
   const tenantId = getCurrentTenantId();
   const key = `mbg_tenant_config_${tenantId}`;
@@ -904,7 +904,7 @@ export const getTenantConfig = (): TenantConfig => {
 
   const finalConfig: TenantConfig = {
     registeredAt: finalRegisteredAt,
-    subscriptionStatus: config ? config.subscriptionStatus : "trial",
+    subscriptionStatus: config ? config.subscriptionStatus : "expired",
     subscriptionPlan: config ? config.subscriptionPlan : undefined,
     subscriptionExpiresAt: config ? config.subscriptionExpiresAt : undefined,
   };
