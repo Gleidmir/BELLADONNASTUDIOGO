@@ -222,3 +222,33 @@ REVOKE EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) FROM PUBLIC;
 -- Permite a execução apenas por usuários autenticados (como você no painel)
 GRANT EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) TO authenticated;
 
+
+-- 3. Função executada quando um novo usuário se registra no Auth
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.barber_shops (tenant_id, name, subscription_status, subscription_plan)
+  VALUES (
+    NEW.email,
+    UPPER(SPLIT_PART(NEW.email, '@', 1)) || ' BARBEARIA',
+    'expired',
+    'mensal'
+  )
+  ON CONFLICT (tenant_id) DO UPDATE
+  SET subscription_status = 'expired';
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Revoga a execução pública por segurança (Advisor do Supabase)
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC;
+
+-- Trigger para automatizar a criação do perfil da barbearia após o cadastro
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
