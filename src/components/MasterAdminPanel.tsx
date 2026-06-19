@@ -151,12 +151,21 @@ export function MasterAdminPanel() {
 
   const copyWhatsAppMessage = (shop: BarberShopProfile) => {
     const isMaster = shop.subscriptionPlan === "master";
-    const planLabel = isMaster ? "VIP / Vitalício" : (shop.subscriptionPlan || "Mensal");
+    const isTrial = shop.subscriptionStatus === "trial";
+    
+    const planLabel = isMaster 
+      ? "VIP / Vitalício" 
+      : isTrial 
+        ? "Teste Grátis (Trial)" 
+        : (shop.subscriptionPlan || "Mensal");
+        
     const expiryStr = isMaster 
       ? "Permanente" 
       : shop.subscriptionExpiresAt 
         ? new Date(shop.subscriptionExpiresAt).toLocaleDateString("pt-BR") 
-        : "N/A";
+        : isTrial && shop.createdAt
+          ? new Date(new Date(shop.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
+          : "N/A";
     
     const message = `Olá! Passando para informar que sua licença do *Meu Barbeiro GO* foi ativada com sucesso! 🎉\n\n` +
       `💈 *Barbearia:* ${shop.name}\n` +
