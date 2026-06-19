@@ -159,3 +159,66 @@ CREATE POLICY "Escrita de perfis para admins" ON public.barber_shops FOR ALL TO 
     USING (tenant_id = (auth.jwt() ->> 'email'::text))
     WITH CHECK (tenant_id = (auth.jwt() ->> 'email'::text));
 
+
+-- ====================================================
+-- TRIGGERS E FUNÇÕES DE SEGURANÇA E EXCLUSÃO
+-- ====================================================
+
+-- 1. Função executada quando um usuário do Auth é deletado diretamente no Supabase
+CREATE OR REPLACE FUNCTION public.handle_deleted_auth_user()
+RETURNS TRIGGER
+AS $$
+BEGIN
+  DELETE FROM public.appointments WHERE tenant_id = OLD.email;
+  DELETE FROM public.clients WHERE tenant_id = OLD.email;
+  DELETE FROM public.services WHERE tenant_id = OLD.email;
+  DELETE FROM public.barbers WHERE tenant_id = OLD.email;
+  DELETE FROM public.barber_shops WHERE tenant_id = OLD.email;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Revoga a execução pública por segurança (Advisor do Supabase)
+REVOKE EXECUTE ON FUNCTION public.handle_deleted_auth_user() FROM PUBLIC;
+
+-- Trigger para automatizar a limpeza caso o e-mail seja apagado no painel do Supabase
+DROP TRIGGER IF EXISTS on_auth_user_deleted ON auth.users;
+CREATE TRIGGER on_auth_user_deleted
+  BEFORE DELETE ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_deleted_auth_user();
+
+
+-- 2. Função de RPC para o Administrador Master usar na lixeira do Painel
+CREATE OR REPLACE FUNCTION public.delete_barber_shop_cascade(target_tenant_id TEXT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+  -- Apenas o administrador master tem permissão
+  IF auth.jwt() ->> 'email'::text <> 'gleidmircristino@hotmail.com' THEN
+    RAISE EXCEPTION 'Apenas o administrador master pode executar esta ação.';
+  END IF;
+
+  -- Deleta os dados de todas as tabelas públicas
+  DELETE FROM public.appointments WHERE tenant_id = target_tenant_id;
+  DELETE FROM public.clients WHERE tenant_id = target_tenant_id;
+  DELETE FROM public.services WHERE tenant_id = target_tenant_id;
+  DELETE FROM public.barbers WHERE tenant_id = target_tenant_id;
+  DELETE FROM public.barber_shops WHERE tenant_id = target_tenant_id;
+  
+  -- Deleta o usuário de login na tabela Auth
+  DELETE FROM auth.users WHERE email = target_tenant_id;
+
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Revoga a execução por usuários anônimos / público
+REVOKE EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) FROM PUBLIC;
+
+-- Permite a execução apenas por usuários autenticados (como você no painel)
+GRANT EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) TO authenticated;
+

@@ -14,11 +14,13 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   getAllBarberShops,
   updateBarberShopSubscription,
+  deleteBarberShop,
   type BarberShopProfile,
 } from "../lib/db";
 
@@ -59,6 +61,13 @@ export function MasterAdminPanel() {
       if (currentExpiry > now) {
         baseDate = currentExpiry;
       }
+    } else if (shop.subscriptionStatus === "trial" && shop.createdAt) {
+      // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante do trial
+      const regDate = new Date(shop.createdAt);
+      const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+      if (trialEndDate > now) {
+        baseDate = trialEndDate;
+      }
     }
 
     const newExpiry = new Date(baseDate.getTime() + days * 24 * 60 * 60 * 1000);
@@ -89,7 +98,7 @@ export function MasterAdminPanel() {
   };
 
   const handleExpireSubscription = async (shop: BarberShopProfile) => {
-    if (confirm(`Deseja suspender/expirar a licença da barbearia "${shop.name}" imediatamente?`)) {
+    if (confirm(`Deseja desativar a licença da barbearia "${shop.name}" imediatamente?`)) {
       const success = await updateBarberShopSubscription(
         shop.tenantId,
         shop.subscriptionPlan || "mensal",
@@ -112,6 +121,30 @@ export function MasterAdminPanel() {
       );
       if (success) {
         loadShops();
+      }
+    }
+  };
+
+  const handleDeleteShop = async (shop: BarberShopProfile) => {
+    const confirm1 = confirm(
+      `ATENÇÃO: Você está prestes a excluir permanentemente a barbearia "${shop.name}" (${shop.tenantId}).\n\nIsso apagará TODOS os dados no Supabase (Barbeiros, Serviços, Clientes, Agendamentos e Perfil) bem como o Usuário de Login correspondente.\n\nDeseja continuar?`
+    );
+    if (!confirm1) return;
+
+    const confirm2 = confirm(
+      `CONFIRMAÇÃO FINAL:\n\nEsta ação é IRREVERSÍVEL. Você realmente deseja apagar tudo relacionado à barbearia "${shop.name}" de forma definitiva?`
+    );
+    if (confirm2) {
+      setLoading(true);
+      try {
+        const success = await deleteBarberShop(shop.tenantId);
+        if (success) {
+          loadShops();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -171,7 +204,7 @@ export function MasterAdminPanel() {
     if (status === "expired") {
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-0.5 text-[10px] font-black text-red-400 ring-1 ring-red-500/20">
-          <Lock className="h-3 w-3" /> Vencido
+          <Lock className="h-3 w-3" /> Inativa
         </span>
       );
     }
@@ -189,7 +222,7 @@ export function MasterAdminPanel() {
     const now = new Date();
     if (shop.subscriptionStatus === "active" && shop.subscriptionExpiresAt) {
       const expiresAt = new Date(shop.subscriptionExpiresAt);
-      if (now > expiresAt) return "Expirou";
+      if (now > expiresAt) return "Inativa";
       const diffTime = Math.abs(expiresAt.getTime() - now.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return `${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}`;
@@ -198,13 +231,13 @@ export function MasterAdminPanel() {
     if (shop.subscriptionStatus === "trial" && shop.createdAt) {
       const regDate = new Date(shop.createdAt);
       const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-      if (now > trialEndDate) return "Expirou";
+      if (now > trialEndDate) return "Inativa";
       const diffTime = Math.abs(trialEndDate.getTime() - now.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return `${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} (Teste)`;
     }
 
-    return "Expirou";
+    return "Inativa";
   };
 
   return (
@@ -352,7 +385,11 @@ export function MasterAdminPanel() {
                         <span className="text-zinc-300 font-bold mt-1 block">
                           {shop.subscriptionExpiresAt 
                             ? new Date(shop.subscriptionExpiresAt).toLocaleDateString("pt-BR") + " às " + new Date(shop.subscriptionExpiresAt).toLocaleTimeString("pt-BR", {hour: '2-digit', minute:'2-digit'})
-                            : shop.subscriptionPlan === "master" ? "Permanente" : "N/A"}
+                            : shop.subscriptionPlan === "master" 
+                              ? "Permanente" 
+                              : shop.subscriptionStatus === "trial" && shop.createdAt
+                                ? new Date(new Date(shop.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR") + " (Fim do Teste)"
+                                : "N/A"}
                         </span>
                       </div>
                     </div>
@@ -406,7 +443,13 @@ export function MasterAdminPanel() {
                           onClick={() => handleExpireSubscription(shop)}
                           className="rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 py-2 text-xs font-bold border border-red-500/20 hover:border-transparent transition-all cursor-pointer active:scale-95"
                         >
-                          Suspender Licença (Vencido)
+                          Desativar Licença (Inativa)
+                        </button>
+                        <button
+                          onClick={() => handleDeleteShop(shop)}
+                          className="rounded-xl bg-red-600 hover:bg-red-500 text-white px-3 py-2 text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 shrink-0" /> Excluir Barbearia
                         </button>
                         <button
                           onClick={() => copyWhatsAppMessage(shop)}

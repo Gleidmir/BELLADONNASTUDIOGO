@@ -1015,6 +1015,13 @@ export const activateSubscription = async (code: string): Promise<boolean> => {
     if (currentExpiry > now) {
       baseDate = currentExpiry;
     }
+  } else if (config.subscriptionStatus === "trial" && config.registeredAt) {
+    // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante
+    const regDate = new Date(config.registeredAt);
+    const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+    if (trialEndDate > now) {
+      baseDate = trialEndDate;
+    }
   }
 
   let expiresAtStr: string | undefined;
@@ -1221,6 +1228,8 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           .insert({
             tenant_id: tenantId,
             name: defaultName,
+            subscription_status: "expired",
+            subscription_plan: "mensal",
           })
           .select()
           .single();
@@ -1232,7 +1241,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
             logoUrl: newData.logo_url || undefined,
             createdAt: newData.created_at,
             subscriptionPlan: newData.subscription_plan || "mensal",
-            subscriptionStatus: newData.subscription_status || "trial",
+            subscriptionStatus: newData.subscription_status || "expired",
             subscriptionExpiresAt: newData.subscription_expires_at || undefined,
           };
           if (!isServer) {
@@ -1243,7 +1252,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
             const updatedConfig: TenantConfig = {
               registeredAt: newData.created_at || new Date().toISOString(),
               subscriptionPlan: newData.subscription_plan || undefined,
-              subscriptionStatus: newData.subscription_status || "trial",
+              subscriptionStatus: newData.subscription_status || "expired",
               subscriptionExpiresAt: newData.subscription_expires_at || undefined,
             };
             window.localStorage.setItem(configKey, JSON.stringify(updatedConfig));
@@ -1274,7 +1283,7 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
     tenantId,
     name: tenantId === "default" ? "Meu Barbeiro GO" : tenantId.split("@")[0].toUpperCase() + " BARBEARIA",
     subscriptionPlan: config.subscriptionPlan || "mensal",
-    subscriptionStatus: config.subscriptionStatus || "trial",
+    subscriptionStatus: config.subscriptionStatus || "expired",
     subscriptionExpiresAt: config.subscriptionExpiresAt || undefined,
   };
 };
@@ -1353,6 +1362,24 @@ export const updateBarberShopSubscription = async (
     } catch (e) {
       console.error("Erro ao atualizar assinatura no Supabase:", e);
       toast.error("Erro ao salvar alterações no banco online.");
+      return false;
+    }
+  }
+  return false;
+};
+
+export const deleteBarberShop = async (tenantId: string): Promise<boolean> => {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase.rpc("delete_barber_shop_cascade", {
+        target_tenant_id: tenantId,
+      });
+      if (error) throw error;
+      toast.success("Barbearia e todos os dados associados foram excluídos com sucesso!");
+      return true;
+    } catch (e) {
+      console.error("Erro ao excluir barbearia:", e);
+      toast.error("Erro ao excluir barbearia no servidor.");
       return false;
     }
   }

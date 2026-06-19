@@ -247,13 +247,13 @@ function SignupCard() {
 
     setLoading(true);
 
-    // Initialize tenant config locally to start the 30-day trial immediately
+    // Initialize tenant config locally to start as expired/inactive
     if (typeof window !== "undefined") {
       const configKey = `mbg_tenant_config_${email}`;
       if (!window.localStorage.getItem(configKey)) {
         window.localStorage.setItem(configKey, JSON.stringify({
           registeredAt: new Date().toISOString(),
-          subscriptionStatus: "trial",
+          subscriptionStatus: "expired",
         }));
       }
     }
@@ -273,7 +273,7 @@ function SignupCard() {
 
         if (error) throw error;
 
-        toast.success("Cadastro efetuado! Se necessário, confirme seu e-mail ou faça login no painel.");
+        toast.success("Cadastro efetuado! Faça login e solicite a liberação de seus 30 dias grátis.");
         navigate({ to: "/login" });
       } catch (error: any) {
         console.error("Erro no cadastro:", error);
@@ -310,7 +310,7 @@ function SignupCard() {
           Acesso Antecipado
         </p>
       </div>
-      <p className="mt-2 text-lg font-bold text-white">Comece seu teste de 30 dias</p>
+      <p className="mt-2 text-lg font-bold text-white">Cadastre sua barbearia</p>
 
       <div className="mt-5 space-y-3">
         <div>
@@ -358,7 +358,7 @@ function SignupCard() {
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "CRIAR MINHA CONTA →"}
       </button>
       <p className="mt-3 text-center text-xs text-zinc-500">
-        ✓ Sem cartão de crédito. Teste grátis por 1 mês completo.
+        ✓ Teste grátis de 30 dias mediante solicitação de liberação.
       </p>
     </form>
   );
@@ -515,7 +515,7 @@ export function LandingPage() {
           </div>
 
           <div className="mt-12 text-center max-w-xl mx-auto bg-zinc-900/40 border border-zinc-900 rounded-2xl p-4 text-xs text-zinc-400">
-            💡 <strong>Quer testar antes?</strong> Basta criar sua conta no formulário no topo da página. Sua barbearia ganhará <strong>30 dias de teste grátis imediatamente</strong>, sem necessidade de pagamento inicial!
+            💡 <strong>Quer testar antes?</strong> Basta criar sua conta no formulário no topo da página e solicitar a ativação dos seus <strong>30 dias de teste grátis</strong> com o administrador.
           </div>
         </div>
       </section>

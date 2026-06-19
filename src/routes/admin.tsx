@@ -693,7 +693,7 @@ function AdminDashboard() {
               <BarberGoLogo className="w-10 h-10 shrink-0 animate-pulse" />
               <div className="min-w-0">
                 <span className="text-base font-extrabold tracking-tight block truncate">Meu Barbeiro <span className="text-amber-500">GO</span></span>
-                <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block truncate">Assinatura Expirada</span>
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block truncate">Conta Inativa</span>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
@@ -715,11 +715,31 @@ function AdminDashboard() {
               <Lock className="h-8 w-8" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white animate-fade-in">
-              Acesso Suspenso
+              Acesso Inativo
             </h1>
             <p className="text-zinc-400 text-sm mt-2">
-              Seu período de avaliação gratuita ou sua assinatura expirou. Para reativar seu acesso e continuar gerenciando sua barbearia, escolha e assine um plano.
+              Sua conta está inativa. Se você acabou de realizar o cadastro, solicite a liberação dos seus 30 dias de teste grátis com o administrador. Caso o seu período tenha acabado, você pode assinar um plano abaixo para reativar seu acesso.
             </p>
+          </div>
+
+          {/* Card de solicitação de liberação do Trial de 30 dias */}
+          <div className="bg-zinc-900/60 ring-1 ring-zinc-800 rounded-3xl p-6 mb-8 text-center max-w-2xl mx-auto space-y-4">
+            <h3 className="text-sm font-extrabold text-amber-500 uppercase tracking-widest">
+              Solicitar Teste Grátis
+            </h3>
+            <p className="text-xs text-zinc-300">
+              Se você acabou de criar a sua conta, clique no botão abaixo para solicitar ao administrador a liberação do seu <strong>período de testes de 30 dias gratuitamente</strong>!
+            </p>
+            <a
+              href={`https://wa.me/5562993299120?text=${encodeURIComponent(
+                `Olá Gleidmir! Acabei de cadastrar minha barbearia no Meu Barbeiro GO com o e-mail: ${session?.email || session?.email || "default"}. Gostaria de solicitar a ativação dos meus 30 dias de teste grátis!`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 text-xs font-bold transition-all shadow-lg shadow-emerald-600/10 cursor-pointer active:scale-95"
+            >
+              <WhatsAppIcon className="h-4 w-4 fill-current shrink-0" /> Solicitar Ativação de 30 Dias Grátis
+            </a>
           </div>
 
           <SubscriptionSection
