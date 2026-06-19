@@ -55,14 +55,9 @@ export function MasterAdminPanel() {
     const now = new Date();
     let baseDate = now;
 
-    // Se já estiver ativa e com vencimento futuro, soma ao vencimento atual
-    if (shop.subscriptionStatus === "active" && shop.subscriptionExpiresAt) {
-      const currentExpiry = new Date(shop.subscriptionExpiresAt);
-      if (currentExpiry > now) {
-        baseDate = currentExpiry;
-      }
-    } else if (shop.subscriptionStatus === "trial" && shop.createdAt) {
-      // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante do trial
+    // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante do trial.
+    // Caso contrário, calcula a partir de "agora", substituindo qualquer plano pago anterior (conforme preferência do usuário).
+    if (shop.createdAt) {
       const regDate = new Date(shop.createdAt);
       const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
       if (trialEndDate > now) {

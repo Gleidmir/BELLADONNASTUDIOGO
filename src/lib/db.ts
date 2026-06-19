@@ -1009,14 +1009,9 @@ export const activateSubscription = async (code: string): Promise<boolean> => {
   const now = new Date();
   let baseDate = now;
 
-  // Se já possuir um plano ativo, soma ao tempo restante
-  if (config.subscriptionStatus === "active" && config.subscriptionExpiresAt) {
-    const currentExpiry = new Date(config.subscriptionExpiresAt);
-    if (currentExpiry > now) {
-      baseDate = currentExpiry;
-    }
-  } else if (config.subscriptionStatus === "trial" && config.registeredAt) {
-    // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante
+  // Se estiver no período de testes (trial) e restar tempo, soma ao tempo restante do trial.
+  // Caso contrário, calcula a partir de "agora", substituindo qualquer plano pago anterior (conforme preferência do usuário).
+  if (config.registeredAt) {
     const regDate = new Date(config.registeredAt);
     const trialEndDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
     if (trialEndDate > now) {
