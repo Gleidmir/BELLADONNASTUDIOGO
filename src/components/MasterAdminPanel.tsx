@@ -426,32 +426,32 @@ export function MasterAdminPanel() {
                       
                       {/* Grid de dias - 2 colunas */}
                       <div className="grid grid-cols-2 gap-3">
-                        {/* Coluna da esquerda: verdes claros */}
+                        {/* Coluna da esquerda: verdes neon */}
                         <div className="space-y-2">
                           <button
                             onClick={() => handleExtendSubscription(shop, 30, "mensal")}
-                            className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-500/10 uppercase"
+                            className="w-full rounded-xl bg-[#39ff14] hover:bg-[#2ee610] text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-[#39ff14]/20 uppercase"
                           >
                             +30 DIAS
                           </button>
                           <button
                             onClick={() => handleExtendSubscription(shop, 90, "trimestral")}
-                            className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-500/10 uppercase"
+                            className="w-full rounded-xl bg-[#39ff14] hover:bg-[#2ee610] text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-[#39ff14]/20 uppercase"
                           >
                             +90 DIAS
                           </button>
                         </div>
-                        {/* Coluna da direita: degradê laranja/amarelo do Adm Master */}
+                        {/* Coluna da direita: laranjas neon */}
                         <div className="space-y-2">
                           <button
                             onClick={() => handleExtendSubscription(shop, 180, "semestral")}
-                            className="w-full rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                            className="w-full rounded-xl bg-[#ff6700] hover:bg-[#e65c00] text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-[#ff6700]/20 uppercase"
                           >
                             +180 DIAS
                           </button>
                           <button
                             onClick={() => handleExtendSubscription(shop, 365, "anual")}
-                            className="w-full rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                            className="w-full rounded-xl bg-[#ff6700] hover:bg-[#e65c00] text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-[#ff6700]/20 uppercase"
                           >
                             +365 DIAS
                           </button>
