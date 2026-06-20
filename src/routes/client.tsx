@@ -310,7 +310,12 @@ function ClientDashboard() {
       {/* Main Content Area */}
       <main className="flex-1 mx-auto w-full max-w-lg px-4 py-4">
         {activeTab === "book" ? (
-          <BookingFlow clientPhone={session.phone} clientName={session.name} shopProfile={shopProfile} />
+          <BookingFlow
+            clientPhone={session.phone}
+            clientName={session.name}
+            shopProfile={shopProfile}
+            onSessionUpdate={setSession}
+          />
         ) : (
           <MyAppointments clientPhone={session.phone} />
         )}
@@ -356,11 +361,12 @@ interface BookingFlowProps {
   clientPhone: string;
   clientName: string;
   shopProfile: BarberShopProfile | null;
+  onSessionUpdate: (newSession: any) => void;
 }
 
 type Step = "service" | "barber" | "datetime" | "confirm" | "success";
 
-function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps) {
+function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate }: BookingFlowProps) {
   const [step, setStep] = useState<Step>("service");
   const [services, setServices] = useState<Service[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
@@ -377,6 +383,15 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
   const [days, setDays] = useState<{ label: string; dateStr: string; dayNum: string; isAvailable: boolean }[]>([]);
   const [currentMonthYear, setCurrentMonthYear] = useState("");
   const [monthOffset, setMonthOffset] = useState(0);
+
+  // Local state for client details (so they can be edited)
+  const [customClientName, setCustomClientName] = useState(clientName);
+  const [customClientPhone, setCustomClientPhone] = useState(clientPhone);
+
+  useEffect(() => {
+    setCustomClientName(clientName);
+    setCustomClientPhone(clientPhone);
+  }, [clientName, clientPhone]);
 
   // Load static data
   useEffect(() => {
@@ -521,8 +536,8 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
 
     const dateStr = new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR");
     const message = `Olá, ${selectedBarber.name}! Acabei de realizar um agendamento pelo aplicativo:\n\n` +
-      `👤 *Cliente:* ${clientName}\n` +
-      `📞 *Telefone:* ${clientPhone}\n` +
+      `👤 *Cliente:* ${customClientName}\n` +
+      `📞 *Telefone:* ${customClientPhone}\n` +
       `💇 *Serviço:* ${selectedService.name}\n` +
       `💰 *Valor:* R$ ${selectedService.price.toFixed(2)}\n` +
       `📅 *Data:* ${dateStr}\n` +
@@ -535,12 +550,18 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
   const handleFinishBooking = async () => {
     if (!selectedService || !selectedBarber || !selectedDate || !selectedTime) return;
 
+    if (!customClientName.trim() || customClientPhone.replace(/\D/g, "").length < 10) {
+      toast.error("Por favor, preencha o nome e um telefone válido.");
+      return;
+    }
+
     setLoading(true);
     try {
+      const cleanPhone = customClientPhone.replace(/\D/g, "");
       await addAppointment({
-        clientId: `c_${clientPhone}`,
-        clientName,
-        clientPhone,
+        clientId: `c_${cleanPhone}`,
+        clientName: customClientName,
+        clientPhone: cleanPhone,
         serviceId: selectedService.id,
         serviceName: selectedService.name,
         price: selectedService.price,
@@ -549,6 +570,14 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
         date: selectedDate,
         time: selectedTime,
       });
+
+      const newSession = {
+        role: "client" as const,
+        name: customClientName,
+        phone: cleanPhone,
+      };
+      setCurrentUser(newSession);
+      onSessionUpdate(newSession);
       setStep("success");
     } catch (e) {
       console.error(e);
@@ -912,10 +941,30 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
               </div>
             </div>
 
-            <div className="pt-3 border-t border-zinc-800 text-xs">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Cliente</p>
-              <p className="font-bold text-white mt-0.5">{clientName}</p>
-              <p className="text-zinc-500 mt-0.5">{clientPhone}</p>
+            <div className="pt-3 border-t border-zinc-800 text-xs space-y-3">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Dados do Agendamento</p>
+              <div>
+                <label className="text-[10px] text-zinc-400 font-medium">Nome do Cliente</label>
+                <input
+                  type="text"
+                  required
+                  value={customClientName}
+                  onChange={(e) => setCustomClientName(e.target.value)}
+                  placeholder="Ex: João da Silva"
+                  className="w-full rounded-xl bg-zinc-950 mt-1 px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-zinc-400 font-medium">WhatsApp (com DDD)</label>
+                <input
+                  type="tel"
+                  required
+                  value={customClientPhone}
+                  onChange={(e) => setCustomClientPhone(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Ex: 62999998888"
+                  className="w-full rounded-xl bg-zinc-950 mt-1 px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                />
+              </div>
             </div>
           </div>
 
@@ -996,7 +1045,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile }: BookingFlowProps)
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">CLIENTE:</span>
-                <span className="text-white font-extrabold">{clientName}</span>
+                <span className="text-white font-extrabold">{customClientName}</span>
               </div>
             </div>
           </div>
