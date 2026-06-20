@@ -426,32 +426,32 @@ export function MasterAdminPanel() {
                       
                       {/* Grid de dias - 2 colunas */}
                       <div className="grid grid-cols-2 gap-3">
-                        {/* Coluna da esquerda: verdes */}
+                        {/* Coluna da esquerda: verdes claros */}
                         <div className="space-y-2">
                           <button
                             onClick={() => handleExtendSubscription(shop, 30, "mensal")}
-                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
+                            className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-500/10 uppercase"
                           >
                             +30 DIAS
                           </button>
                           <button
                             onClick={() => handleExtendSubscription(shop, 90, "trimestral")}
-                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
+                            className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-500/10 uppercase"
                           >
                             +90 DIAS
                           </button>
                         </div>
-                        {/* Coluna da direita: amarelos */}
+                        {/* Coluna da direita: degradê laranja/amarelo do Adm Master */}
                         <div className="space-y-2">
                           <button
                             onClick={() => handleExtendSubscription(shop, 180, "semestral")}
-                            className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                            className="w-full rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
                           >
                             +180 DIAS
                           </button>
                           <button
                             onClick={() => handleExtendSubscription(shop, 365, "anual")}
-                            className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
+                            className="w-full rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-amber-500/10 uppercase"
                           >
                             +365 DIAS
                           </button>
@@ -468,13 +468,13 @@ export function MasterAdminPanel() {
                         </button>
                         <button
                           onClick={() => handleSetTrial(shop)}
-                          className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-600/10 uppercase"
+                          className="w-full rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-emerald-700/10 uppercase"
                         >
                           REDEFINIR PARA TESTE GRÁTIS (TRIAL)
                         </button>
                         <button
                           onClick={() => handleExpireSubscription(shop)}
-                          className="w-full rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase"
+                          className="w-full rounded-xl bg-blue-900 hover:bg-blue-800 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center shadow-lg shadow-blue-900/10 uppercase"
                         >
                           DESATIVAR LICENÇA (INATIVA)
                         </button>
@@ -486,7 +486,7 @@ export function MasterAdminPanel() {
                         </button>
                         <button
                           onClick={() => copyWhatsAppMessage(shop)}
-                          className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase"
+                          className="w-full rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white py-3 text-xs font-black transition-all cursor-pointer active:scale-95 text-center uppercase"
                         >
                           COPIAR MENSAGEM WHATSAPP
                         </button>
