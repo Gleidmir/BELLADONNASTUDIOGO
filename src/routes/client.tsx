@@ -163,9 +163,9 @@ function ClientDashboard() {
           <p className="text-zinc-400 text-xs mt-3 max-w-xs leading-relaxed">
             Esta barbearia não foi encontrada em nossa base de dados ou foi desativada pelo administrador.
           </p>
-          <button
+           <button
             onClick={handleClearSessionAndGoHome}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-zinc-300 hover:text-white px-6 py-3 text-xs font-bold transition-all cursor-pointer active:scale-95"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#39ff14] hover:bg-[#2ee610] text-zinc-950 px-6 py-3.5 text-xs font-black transition-all cursor-pointer active:scale-95 shadow-lg shadow-[#39ff14]/20 uppercase animate-pulse"
           >
             Voltar para o Início
           </button>
