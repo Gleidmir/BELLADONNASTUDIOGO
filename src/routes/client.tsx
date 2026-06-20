@@ -200,7 +200,10 @@ function ClientDashboard() {
               </span>
             </div>
             <div className="flex items-center gap-2.5">
-              <span className="text-xs text-zinc-400 font-medium">Olá, {session.name}</span>
+              <span className="text-xs text-zinc-400 font-medium flex flex-col items-end">
+                <span>Olá, {session.name}</span>
+                <span className="text-[9px] text-zinc-500 font-mono tracking-tight mt-0.5">{session.phone}</span>
+              </span>
               <button
                 onClick={handleLogout}
                 className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 transition-colors cursor-pointer flex items-center justify-center"
@@ -263,7 +266,10 @@ function ClientDashboard() {
             </span>
           </div>
           <div className="flex items-center gap-2.5">
-            <span className="text-xs text-zinc-400 font-medium">Olá, {session.name}</span>
+            <span className="text-xs text-zinc-400 font-medium flex flex-col items-end">
+              <span>Olá, {session.name}</span>
+              <span className="text-[9px] text-zinc-500 font-mono tracking-tight mt-0.5">{session.phone}</span>
+            </span>
             <button
               onClick={handleLogout}
               className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 transition-colors cursor-pointer flex items-center justify-center"
@@ -1171,7 +1177,12 @@ function MyAppointments({ clientPhone }: MyAppointmentsProps) {
         <div className="text-center py-12 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-6">
           <CalendarCheck className="h-10 w-10 text-zinc-600 mx-auto mb-3" />
           <p className="text-sm font-bold text-zinc-400">Nenhum agendamento encontrado</p>
-          <p className="text-xs text-zinc-600 mt-1">Você ainda não realizou agendamentos no nosso aplicativo.</p>
+          <p className="text-xs text-zinc-500 font-mono mt-2 bg-zinc-950/60 border border-zinc-800/50 py-1.5 px-3 rounded-lg inline-block">
+            Celular: {clientPhone}
+          </p>
+          <p className="text-[11px] text-zinc-600 mt-3 leading-relaxed">
+            Se este não for o seu número de cadastro, ou se agendou usando outro celular, clique no botão de <strong>Sair</strong> (porta com seta) no topo direito e acesse com o número correto.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
