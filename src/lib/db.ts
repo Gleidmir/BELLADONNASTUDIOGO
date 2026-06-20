@@ -96,7 +96,17 @@ const getStorageItem = <T>(key: string, defaultValue: T): T => {
   try {
     const tenantKey = getTenantKey(key);
     const item = window.localStorage.getItem(tenantKey);
-    return item ? JSON.parse(item) : defaultValue;
+    if (item === null || item === "null" || item === "undefined") {
+      return defaultValue;
+    }
+    const parsed = JSON.parse(item);
+    if (parsed === null || parsed === undefined) {
+      return defaultValue;
+    }
+    if (Array.isArray(defaultValue) && !Array.isArray(parsed)) {
+      return defaultValue;
+    }
+    return parsed as T;
   } catch (error) {
     console.error("Erro ao ler localStorage:", key, error);
     return defaultValue;
@@ -736,8 +746,7 @@ export const addAppointment = async (
       triggerWhatsAppNotification(newApt);
       return newApt;
     } catch (e) {
-      console.error("Erro ao adicionar agendamento no Supabase:", e);
-      toast.error("Erro ao salvar no banco online, salvando local...");
+      console.warn("Erro ao adicionar agendamento no Supabase, salvando localmente:", e);
     }
   }
 
@@ -1254,19 +1263,46 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           subscriptionExpiresAt: data.subscription_expires_at || undefined,
         };
         if (!isServer) {
-          window.localStorage.setItem(`mbg_profile_${tenantId}`, JSON.stringify(prof));
-          
-          // Sincroniza o TenantConfig no localStorage
           const configKey = `mbg_tenant_config_${tenantId}`;
           const currentConfigStr = window.localStorage.getItem(configKey);
-          let currentConfig = { registeredAt: data.created_at || new Date().toISOString(), subscriptionStatus: "expired" as const };
+          let isRecreated = false;
           if (currentConfigStr) {
             try {
-              currentConfig = JSON.parse(currentConfigStr);
+              const currentConfig = JSON.parse(currentConfigStr);
+              if (currentConfig.registeredAt && data.created_at) {
+                const localRegTime = new Date(currentConfig.registeredAt).getTime();
+                const dbRegTime = new Date(data.created_at).getTime();
+                if (Math.abs(dbRegTime - localRegTime) > 5000) {
+                  isRecreated = true;
+                }
+              }
             } catch (e) {}
           }
+
+          if (isRecreated) {
+            console.log("Tenant was recreated on Supabase. Clearing stale local cache...");
+            window.localStorage.removeItem(`mbg_profile_${tenantId}`);
+            window.localStorage.removeItem(`mbg_tenant_config_${tenantId}`);
+            window.localStorage.removeItem(`mbg_barbers_${tenantId}`);
+            window.localStorage.removeItem(`mbg_services_${tenantId}`);
+            window.localStorage.removeItem(`mbg_clients_${tenantId}`);
+            window.localStorage.removeItem(`mbg_appointments_${tenantId}`);
+            
+            const localSessionStr = window.localStorage.getItem("mbg_session");
+            if (localSessionStr) {
+              try {
+                const localSession = JSON.parse(localSessionStr);
+                if (localSession && localSession.role === "client") {
+                  window.localStorage.removeItem("mbg_session");
+                }
+              } catch (e) {}
+            }
+          }
+
+          window.localStorage.setItem(`mbg_profile_${tenantId}`, JSON.stringify(prof));
+          
           const updatedConfig: TenantConfig = {
-            registeredAt: data.created_at || currentConfig.registeredAt,
+            registeredAt: data.created_at || new Date().toISOString(),
             subscriptionPlan: data.subscription_plan || undefined,
             subscriptionStatus: data.subscription_status || "expired",
             subscriptionExpiresAt: data.subscription_expires_at || undefined,

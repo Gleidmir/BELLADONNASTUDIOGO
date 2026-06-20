@@ -19,6 +19,7 @@ import { BarberGoLogo } from "../components/ui/logo";
 import { toast } from "sonner";
 import {
   getCurrentUser,
+  setCurrentUser,
   logout,
   getServices,
   getBarbers,
@@ -579,9 +580,9 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate }: 
       setCurrentUser(newSession);
       onSessionUpdate(newSession);
       setStep("success");
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast.error("Erro ao salvar o agendamento. Tente novamente.");
+      toast.error(e?.message || "Erro ao salvar o agendamento. Tente novamente.");
     } finally {
       setLoading(false);
     }
