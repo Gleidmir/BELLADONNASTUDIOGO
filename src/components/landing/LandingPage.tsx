@@ -479,17 +479,19 @@ export function LandingPage() {
                   key={p.name}
                   className={`relative flex flex-col justify-between p-6 rounded-2xl border text-left bg-zinc-900/60 transition-all ${
                     p.popular
-                      ? "border-amber-500 ring-2 ring-amber-500/20"
+                      ? "border-[#fbbf24] ring-2 ring-[#fbbf24]/20"
+                      : p.bestDeal
+                      ? "border-[#10b981] ring-2 ring-[#10b981]/20"
                       : "border-zinc-800"
                   }`}
                 >
                   {p.popular && (
-                    <span className="absolute -top-3 left-4 rounded-full bg-amber-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                    <span className="absolute -top-3 left-4 rounded-full bg-[#fbbf24] text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
                       Mais Popular
                     </span>
                   )}
                   {p.bestDeal && (
-                    <span className="absolute -top-3 left-4 rounded-full bg-emerald-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                    <span className="absolute -top-3 left-4 rounded-full bg-[#10b981] text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
                       Melhor Preço
                     </span>
                   )}
@@ -500,7 +502,7 @@ export function LandingPage() {
                   </div>
                   <div className="mt-6 pt-4 border-t border-zinc-800 w-full space-y-4">
                     <p className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                      <span className={`h-1.5 w-1.5 rounded-full ${p.popular ? "bg-[#fbbf24]" : p.bestDeal ? "bg-[#10b981]" : "bg-zinc-500"}`} />
                       {p.desc}
                     </p>
                     <p className="text-[10px] text-zinc-500 leading-relaxed">
@@ -510,7 +512,13 @@ export function LandingPage() {
                       href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (R$ ${p.price}) para minha barbearia.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer text-center"
+                      className={`w-full inline-flex items-center justify-center gap-1.5 rounded-xl py-3 text-xs font-bold transition-all cursor-pointer text-center ${
+                        p.popular
+                          ? "bg-[#fbbf24] hover:bg-[#e0a800] text-zinc-950 shadow shadow-[#fbbf24]/10"
+                          : p.bestDeal
+                          ? "bg-[#10b981] hover:bg-[#0d9488] text-zinc-950 shadow shadow-[#10b981]/10"
+                          : "bg-zinc-800 hover:bg-zinc-700 text-white"
+                      }`}
                     >
                       Adquirir Plano
                     </a>
