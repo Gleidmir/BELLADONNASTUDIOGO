@@ -217,31 +217,16 @@ function LoginPage() {
               )}
             </h1>
             <p className="text-zinc-500 text-xs mt-1 text-center">
-              {isClientOnly ? "Identifique-se para Agendar seu Horário" : "Selecione como deseja acessar"}
+              {isAdminOverride ? "Identifique-se para acessar o painel" : isClientOnly ? "Identifique-se para Agendar seu Horário" : "Selecione como deseja acessar"}
             </p>
           </div>
  
           {/* Role selection tab */}
           {isAdminOverride ? (
-            <div className="flex rounded-xl bg-zinc-950/50 p-1 border border-zinc-800 mb-6">
-              <button
-                type="button"
-                onClick={() => setActiveTab("client")}
-                className={`flex-1 rounded-lg py-2.5 text-xs font-black transition-all ${
-                  activeTab === "client" ? "bg-amber-500 text-zinc-950 shadow-md glow-emerald-sm" : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Sou Cliente
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("admin")}
-                className={`flex-1 rounded-xl py-2.5 text-xs font-black transition-all ${
-                  activeTab === "admin" ? "bg-gold-gradient text-zinc-950 shadow-md glow-gold-sm" : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Sou Barbeiro / ADM
-              </button>
+            <div className="flex justify-center mb-6">
+              <span className="rounded-xl bg-gold-gradient text-zinc-950 px-8 py-2.5 text-xs font-black uppercase shadow-md glow-gold-sm tracking-wider select-none">
+                BARBEIRO / ADM
+              </span>
             </div>
           ) : (
             <div className="flex justify-center mb-6">
