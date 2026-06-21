@@ -85,7 +85,10 @@ function LoginPage() {
           if (localSession && localSession.role === "admin") {
             logout();
           } else if (localSession && localSession.role === "client") {
-            navigate({ to: "/client" });
+            const isOverride = params.get("admin") === "true" || params.get("role") === "admin";
+            if (!isOverride) {
+              navigate({ to: "/client" });
+            }
           }
         }
       } else {
@@ -94,7 +97,11 @@ function LoginPage() {
           if (session.role === "admin") {
             navigate({ to: "/admin" });
           } else {
-            navigate({ to: "/client" });
+            const params = new URLSearchParams(window.location.search);
+            const isOverride = params.get("admin") === "true" || params.get("role") === "admin";
+            if (!isOverride) {
+              navigate({ to: "/client" });
+            }
           }
         }
       }
