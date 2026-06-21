@@ -851,7 +851,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
                   const barberStart = selectedBarber?.startTime || "08:00";
                   const barberEnd = selectedBarber?.endTime || "19:00";
                   
-                  const isWithinShift = time >= barberStart && time < barberEnd;
+                  const isWithinShift = time >= barberStart && time <= barberEnd;
                   
                   if (selectedDate === todayStr) {
                     return isWithinShift && time > nowTimeStr;
