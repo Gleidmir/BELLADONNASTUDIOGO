@@ -274,7 +274,7 @@ function SignupCard() {
         if (error) throw error;
 
         toast.success("Cadastro efetuado! Faça login e solicite a liberação de seus 30 dias grátis.");
-        navigate({ to: "/login" });
+        navigate({ to: "/login?admin=true" });
       } catch (error: any) {
         console.error("Erro no cadastro:", error);
         toast.error(error.message || "Erro ao efetuar cadastro. Tente novamente.");

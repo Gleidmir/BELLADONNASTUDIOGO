@@ -118,6 +118,11 @@ function ClientDashboard() {
   }, [navigate]);
 
   const handleLogout = () => {
+    const user = getCurrentUser();
+    if (user && user.role === "admin") {
+      navigate({ to: "/admin" });
+      return;
+    }
     const tenant = typeof window !== "undefined" ? window.localStorage.getItem("mbg_client_tenant") : "";
     logout();
     navigate({ to: tenant ? `/login?t=${tenant}` : "/login" });
