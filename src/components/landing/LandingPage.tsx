@@ -366,6 +366,7 @@ function SignupCard() {
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const [showPlans, setShowPlans] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -392,7 +393,10 @@ export function LandingPage() {
       {/* Nav */}
       <header className="border-b border-zinc-900 bg-zinc-950 sticky top-0 z-40 pt-[calc(28px+env(safe-area-inset-top,0px))] sm:pt-3 pb-3">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+          <div
+            onClick={() => setShowPlans(false)}
+            className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 cursor-pointer"
+          >
             <BarberGoLogo className="w-6 h-6 sm:w-8 h-8 shrink-0 animate-pulse" />
             <span className="text-[10px] xs:text-xs sm:text-base md:text-lg font-extrabold tracking-tight whitespace-nowrap truncate">
               Meu Barbeiro <span className="text-amber-500">GO</span>
@@ -403,122 +407,134 @@ export function LandingPage() {
               href="/login?admin=true"
               className="rounded-lg border border-emerald-500 bg-zinc-950 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-emerald-400 hover:text-zinc-950 hover:bg-emerald-500 transition-all whitespace-nowrap"
             >
-              Entrar
+              ENTRAR
             </a>
-            <button
-              onClick={() => {
-                const element = document.getElementById("pricing-section");
-                if (element) {
-                  element.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="rounded-lg bg-amber-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-all whitespace-nowrap cursor-pointer"
-            >
-              Planos
-            </button>
+            {!showPlans ? (
+              <button
+                onClick={() => setShowPlans(true)}
+                className="rounded-lg bg-amber-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-all whitespace-nowrap cursor-pointer"
+              >
+                PLANOS
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowPlans(false)}
+                className="rounded-lg bg-zinc-800 border border-zinc-700 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-white hover:bg-zinc-700 transition-all whitespace-nowrap cursor-pointer"
+              >
+                VOLTAR
+              </button>
+            )}
           </div>
         </div>
       </header>
 
-      {/* HERO */}
-      <section id="hero" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(245,158,11,0.08),transparent_50%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-          <div className="flex flex-col items-center text-center">
-            {/* Logo circular e Nome do App em letras maiúsculas */}
-            <div className="flex flex-col items-center justify-center mb-6">
-              <div className="relative p-2.5 rounded-full bg-zinc-950/40 ring-1 ring-zinc-800/80 shadow-2xl drop-shadow-[0_0_25px_rgba(74,222,128,0.2)]">
-                <BarberGoLogo className="w-32 h-32 md:w-36 md:h-36" animate={false} />
+      {!showPlans ? (
+        <section id="hero" className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(245,158,11,0.08),transparent_50%)]" />
+          <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
+            <div className="flex flex-col items-center text-center">
+              {/* Logo circular e Nome do App em letras maiúsculas */}
+              <div className="flex flex-col items-center justify-center mb-6">
+                <div className="relative p-2.5 rounded-full bg-zinc-950/40 ring-1 ring-zinc-800/80 shadow-2xl drop-shadow-[0_0_25px_rgba(74,222,128,0.2)]">
+                  <BarberGoLogo className="w-32 h-32 md:w-36 md:h-36" animate={false} />
+                </div>
+                <h2 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+                  MEU BARBEIRO GO
+                </h2>
               </div>
-              <h2 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
-                MEU BARBEIRO GO
-              </h2>
+
+              {/* Apenas a frase solicitada pelo usuário */}
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-amber-400 mb-8">
+                Sua Barbearia no Piloto Automático
+              </h1>
+
+              <div className="mt-8 w-full max-w-md">
+                <SignupCard />
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section id="pricing-section" className="py-20 border-t border-zinc-900 bg-zinc-950/40 relative">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-xs font-bold text-amber-500 uppercase tracking-widest">Planos de Assinatura</h2>
+              <p className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Escolha o melhor plano para a sua barbearia
+              </p>
+              <p className="mt-4 text-base text-zinc-400">
+                Todas as assinaturas iniciam com o período de 30 dias de teste grátis automático a partir do seu cadastro na página inicial.
+              </p>
             </div>
 
-            {/* Apenas a frase solicitada pelo usuário */}
-            <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-amber-400 mb-8">
-              Sua Barbearia no Piloto Automático
-            </h1>
-
-            <div className="mt-8 w-full max-w-md">
-              <SignupCard />
+            {/* Pricing Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { name: "Mensal", price: "R$ 29,90", rawPrice: 29.90, desc: "Acesso total por 30 dias", detail: "R$ 29,90 / mês" },
+                { name: "Trimestral", price: "R$ 74,90", rawPrice: 74.90, desc: "Acesso total por 90 dias", detail: "R$ 24,96 / mês", popular: true },
+                { name: "Semestral", price: "R$ 139,90", rawPrice: 139.90, desc: "Acesso total por 180 dias", detail: "R$ 23,31 / mês" },
+                { name: "Anual", price: "R$ 239,90", rawPrice: 239.90, desc: "Acesso total por 365 dias", detail: "R$ 19,99 / mês", bestDeal: true },
+              ].map((p) => (
+                <div
+                  key={p.name}
+                  className={`relative flex flex-col justify-between p-6 rounded-2xl border text-left bg-zinc-900/60 transition-all ${
+                    p.popular
+                      ? "border-amber-500 ring-2 ring-amber-500/20"
+                      : "border-zinc-800"
+                  }`}
+                >
+                  {p.popular && (
+                    <span className="absolute -top-3 left-4 rounded-full bg-amber-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                      Mais Popular
+                    </span>
+                  )}
+                  {p.bestDeal && (
+                    <span className="absolute -top-3 left-4 rounded-full bg-emerald-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                      Melhor Preço
+                    </span>
+                  )}
+                  <div>
+                    <h3 className="text-base font-extrabold text-white tracking-wide">{p.name}</h3>
+                    <p className="text-3xl font-black text-white mt-3">{p.price}</p>
+                    <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-wider">{p.detail}</p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-zinc-800 w-full space-y-4">
+                    <p className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                      {p.desc}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 leading-relaxed">
+                      A ativação do plano é realizada enviando o comprovante via WhatsApp.
+                    </p>
+                    <a
+                      href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (R$ ${p.price}) para minha barbearia.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer text-center"
+                    >
+                      Adquirir Plano
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
 
+            <div className="mt-12 text-center max-w-xl mx-auto bg-zinc-900/40 border border-zinc-900 rounded-2xl p-4 text-xs text-zinc-400">
+              💡 <strong>Quer testar antes?</strong> Basta criar sua conta no formulário no topo da página e solicitar a ativação dos seus <strong>30 dias de teste grátis</strong> com o administrador.
+            </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* PRICING SECTION */}
-      <section id="pricing-section" className="py-20 border-t border-zinc-900 bg-zinc-950/40 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-amber-500 uppercase tracking-widest">Planos de Assinatura</h2>
-            <p className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-              Escolha o melhor plano para a sua barbearia
-            </p>
-            <p className="mt-4 text-base text-zinc-400">
-              Todas as assinaturas iniciam com o período de 30 dias de teste grátis automático a partir do seu cadastro na página inicial.
-            </p>
-          </div>
-
-          {/* Pricing Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Mensal", price: "R$ 29,90", rawPrice: 29.90, desc: "Acesso total por 30 dias", detail: "R$ 29,90 / mês" },
-              { name: "Trimestral", price: "R$ 74,90", rawPrice: 74.90, desc: "Acesso total por 90 dias", detail: "R$ 24,96 / mês", popular: true },
-              { name: "Semestral", price: "R$ 139,90", rawPrice: 139.90, desc: "Acesso total por 180 dias", detail: "R$ 23,31 / mês" },
-              { name: "Anual", price: "R$ 239,90", rawPrice: 239.90, desc: "Acesso total por 365 dias", detail: "R$ 19,99 / mês", bestDeal: true },
-            ].map((p) => (
-              <div
-                key={p.name}
-                className={`relative flex flex-col justify-between p-6 rounded-2xl border text-left bg-zinc-900/60 transition-all ${
-                  p.popular
-                    ? "border-amber-500 ring-2 ring-amber-500/20"
-                    : "border-zinc-800"
-                }`}
+            <div className="mt-12 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowPlans(false)}
+                className="rounded-lg bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 px-6 py-3 text-sm font-bold text-white transition-all cursor-pointer shadow-lg hover:border-zinc-700"
               >
-                {p.popular && (
-                  <span className="absolute -top-3 left-4 rounded-full bg-amber-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
-                    Mais Popular
-                  </span>
-                )}
-                {p.bestDeal && (
-                  <span className="absolute -top-3 left-4 rounded-full bg-emerald-500 text-zinc-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wider">
-                    Melhor Preço
-                  </span>
-                )}
-                <div>
-                  <h3 className="text-base font-extrabold text-white tracking-wide">{p.name}</h3>
-                  <p className="text-3xl font-black text-white mt-3">{p.price}</p>
-                  <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-wider">{p.detail}</p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-zinc-800 w-full space-y-4">
-                  <p className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                    {p.desc}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 leading-relaxed">
-                    A ativação do plano é realizada enviando o comprovante via WhatsApp.
-                  </p>
-                  <a
-                    href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (R$ ${p.price}) para minha barbearia.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer text-center"
-                  >
-                    Adquirir Plano
-                  </a>
-                </div>
-              </div>
-            ))}
+                VOLTAR PARA A PÁGINA INICIAL
+              </button>
+            </div>
           </div>
-
-          <div className="mt-12 text-center max-w-xl mx-auto bg-zinc-900/40 border border-zinc-900 rounded-2xl p-4 text-xs text-zinc-400">
-            💡 <strong>Quer testar antes?</strong> Basta criar sua conta no formulário no topo da página e solicitar a ativação dos seus <strong>30 dias de teste grátis</strong> com o administrador.
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-zinc-900 bg-zinc-950">
