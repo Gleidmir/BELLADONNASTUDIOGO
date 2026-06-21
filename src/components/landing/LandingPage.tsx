@@ -419,7 +419,7 @@ export function LandingPage() {
             ) : (
               <button
                 onClick={() => setShowPlans(false)}
-                className="rounded-lg bg-amber-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold text-zinc-950 hover:bg-amber-400 transition-all whitespace-nowrap cursor-pointer"
+                className="rounded-lg bg-gold-gradient px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm font-bold transition-all whitespace-nowrap cursor-pointer hover:opacity-90 shadow-md glow-gold-sm"
               >
                 VOLTAR
               </button>
@@ -527,7 +527,7 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setShowPlans(false)}
-                className="rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-3.5 text-sm font-bold tracking-wide transition-all cursor-pointer shadow-lg shadow-amber-500/20"
+                className="rounded-xl bg-gold-gradient hover:opacity-90 px-6 py-3.5 text-sm font-bold tracking-wide transition-all cursor-pointer shadow-lg glow-gold"
               >
                 VOLTAR PARA A PÁGINA INICIAL
               </button>
