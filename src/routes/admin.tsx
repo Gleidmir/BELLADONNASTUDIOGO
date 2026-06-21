@@ -1275,14 +1275,14 @@ function AdminDashboard() {
                               </a>
                               <button
                                 onClick={() => handleEditClientClick(client)}
-                                className="p-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-500 hover:text-amber-500 hover:border-amber-500/30 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-lg bg-zinc-950 border border-yellow-500/30 text-yellow-500 hover:text-yellow-400 hover:border-yellow-500/50 transition-colors cursor-pointer"
                                 title="Editar"
                               >
                                 <Edit2 className="h-3.5 w-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteClientClick(client.id)}
-                                className="p-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-lg bg-zinc-950 border border-red-500/30 text-red-500 hover:text-red-400 hover:border-red-500/50 transition-colors cursor-pointer"
                                 title="Excluir"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
@@ -1434,7 +1434,7 @@ function AdminDashboard() {
                       {/* Edit */}
                       <button
                         onClick={() => handleEditServiceClick(svc)}
-                        className="p-2 rounded-lg bg-zinc-950 border border-zinc-900 text-zinc-500 hover:text-amber-500 hover:border-amber-500/30 transition-colors"
+                        className="p-2 rounded-lg bg-zinc-950 border border-yellow-500/30 text-yellow-500 hover:text-yellow-400 hover:border-yellow-500/50 transition-colors"
                         title="Editar"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -1443,7 +1443,7 @@ function AdminDashboard() {
                       {/* Delete */}
                       <button
                         onClick={() => handleDeleteServiceClick(svc.id)}
-                        className="p-2 rounded-lg bg-zinc-950 border border-zinc-900 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-colors"
+                        className="p-2 rounded-lg bg-zinc-950 border border-red-500/30 text-red-500 hover:text-red-400 hover:border-red-500/50 transition-colors"
                         title="Excluir"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -1672,7 +1672,7 @@ function AdminDashboard() {
                       {/* Edit */}
                       <button
                         onClick={() => handleEditBarberClick(barber)}
-                        className="p-2 rounded-lg bg-zinc-950 border border-zinc-900 text-zinc-500 hover:text-amber-500 hover:border-amber-500/30 transition-colors"
+                        className="p-2 rounded-lg bg-zinc-950 border border-yellow-500/30 text-yellow-500 hover:text-yellow-400 hover:border-yellow-500/50 transition-colors"
                         title="Editar"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -1681,7 +1681,7 @@ function AdminDashboard() {
                       {/* Delete */}
                       <button
                         onClick={() => handleDeleteBarberClick(barber.id)}
-                        className="p-2 rounded-lg bg-zinc-950 border border-zinc-900 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-colors"
+                        className="p-2 rounded-lg bg-zinc-950 border border-red-500/30 text-red-500 hover:text-red-400 hover:border-red-500/50 transition-colors"
                         title="Excluir"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

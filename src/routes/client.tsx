@@ -751,7 +751,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
           <div className="mt-6 flex gap-3">
             <button
               onClick={() => setStep("service")}
-              className="flex-1 rounded-xl bg-zinc-900 border border-zinc-800 py-3.5 text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+              className="flex-1 rounded-xl border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500 hover:text-zinc-950 transition-all py-3.5 text-xs font-bold active:scale-95"
             >
               Voltar
             </button>
@@ -888,7 +888,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
           <div className="mt-6 flex gap-3">
             <button
               onClick={() => setStep("barber")}
-              className="flex-1 rounded-xl bg-zinc-900 border border-zinc-800 py-3.5 text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+              className="flex-1 rounded-xl border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500 hover:text-zinc-950 transition-all py-3.5 text-xs font-bold active:scale-95"
             >
               Voltar
             </button>
@@ -981,7 +981,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
               type="button"
               disabled={loading}
               onClick={() => setStep("datetime")}
-              className="flex-1 rounded-xl bg-zinc-900 border border-zinc-800 py-3.5 text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+              className="flex-1 rounded-xl border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500 hover:text-zinc-950 transition-all py-3.5 text-xs font-bold active:scale-95"
             >
               Voltar
             </button>
