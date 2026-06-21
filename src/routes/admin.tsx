@@ -1269,7 +1269,7 @@ function AdminDashboard() {
                                 href={`https://wa.me/55${client.phone}?text=Ol%C3%A1%20${encodeURIComponent(client.name)}!%20Tudo%20bem%3F%20Entramos%20em%20contato%20pela%20Barbearia.`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 py-1.5 text-[10px] font-bold text-zinc-400 hover:text-white hover:border-zinc-700 transition-all"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-green-500/30 bg-zinc-950 px-2.5 py-1.5 text-[10px] font-bold text-green-500 hover:text-green-400 hover:border-green-500/50 transition-all cursor-pointer"
                               >
                                 Mensagem
                               </a>
