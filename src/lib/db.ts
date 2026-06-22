@@ -1420,6 +1420,20 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
 
   // Fallback local
   if (!isServer) {
+    const stored = window.localStorage.getItem(`mbg_profile_${tenantId}`);
+    if (stored) {
+      try {
+        const prof = JSON.parse(stored) as BarberShopProfile;
+        if (tenantId === "gleidmircristino@hotmail.com") {
+          prof.subscriptionPlan = "master";
+          prof.subscriptionStatus = "active";
+        }
+        return prof;
+      } catch (e) {
+        console.error("Erro ao ler perfil local:", e);
+      }
+    }
+
     if (tenantId === "gleidmircristino@hotmail.com") {
       const prof: BarberShopProfile = {
         tenantId,
@@ -1429,14 +1443,6 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
       };
       window.localStorage.setItem(`mbg_profile_${tenantId}`, JSON.stringify(prof));
       return prof;
-    }
-    const stored = window.localStorage.getItem(`mbg_profile_${tenantId}`);
-    if (stored) {
-      try {
-        return JSON.parse(stored) as BarberShopProfile;
-      } catch (e) {
-        console.error("Erro ao ler perfil local:", e);
-      }
     }
   }
   return null;
