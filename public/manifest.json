@@ -1,15 +1,15 @@
 {
-  "name": "Meu Barbeiro GO",
-  "short_name": "Barbeiro GO",
-  "description": "Seu corte, sua hora, você no controle. Agendamento online de barbearias.",
+  "name": "BellaDonna Studio GO",
+  "short_name": "BellaDonna GO",
+  "description": "BellaDonna Studio GO — Seu momento de beleza, do seu jeito. Agendamento online prático para serviços de salão.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",
-  "theme_color": "#f59e0b",
+  "theme_color": "#db2777",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/og_image.png?v=4",
+      "src": "/og_image.png?v=5",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

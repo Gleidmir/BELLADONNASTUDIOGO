@@ -79,24 +79,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
-      { title: "MEU BARBEIRO GO" },
-      { name: "description", content: "Meu Barbeiro GO — Seu corte, sua hora, você no controle. Sistema de agendamento online fácil e prático para barbearias." },
-      { name: "author", content: "Meu Barbeiro GO" },
-      { property: "og:title", content: "MEU BARBEIRO GO" },
-      { property: "og:description", content: "Meu Barbeiro GO — Seu corte, sua hora, você no controle. Sistema de agendamento online fácil e prático para barbearias." },
+      { title: "BellaDonna Studio GO" },
+      { name: "description", content: "BellaDonna Studio GO — Seu momento de beleza, do seu jeito. Agendamento online prático para pedicure, manicure, corte, sobrancelhas e muito mais." },
+      { name: "author", content: "BellaDonna Studio GO" },
+      { property: "og:title", content: "BellaDonna Studio GO" },
+      { property: "og:description", content: "BellaDonna Studio GO — Seu momento de beleza, do seu jeito. Agendamento online prático para pedicure, manicure, corte, sobrancelhas e muito mais." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@meubarbeirogo" },
-      { name: "twitter:title", content: "MEU BARBEIRO GO" },
-      { name: "twitter:description", content: "Meu Barbeiro GO — Seu corte, sua hora, você no controle. Sistema de agendamento online fácil e prático para barbearias." },
-      { property: "og:image", content: "https://meubarbeirogo.netlify.app/og_image.png?v=4" },
-      { name: "twitter:image", content: "https://meubarbeirogo.netlify.app/og_image.png?v=4" },
+      { name: "twitter:site", content: "@belladonnastudiogo" },
+      { name: "twitter:title", content: "BellaDonna Studio GO" },
+      { name: "twitter:description", content: "BellaDonna Studio GO — Seu momento de beleza, do seu jeito. Agendamento online prático para pedicure, manicure, corte, sobrancelhas e muito mais." },
+      { property: "og:image", content: "https://belladonnastudiogo.netlify.app/og_image.png?v=5" },
+      { name: "twitter:image", content: "https://belladonnastudiogo.netlify.app/og_image.png?v=5" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Meu Barbeiro GO" },
+      { name: "apple-mobile-web-app-title", content: "BellaDonna Studio GO" },
       { name: "theme-color", content: "#09090b" },
-      { name: "keywords", content: "barbearia, agendamento online, barbearia goiás, agendamento de barbeiro, cortar cabelo, fazer barba, barbearia go, meubarbeiro" },
+      { name: "keywords", content: "salão de beleza, manicure, pedicure, sobrancelha, progressiva, cabelo feminino, agendamento online, belladonna, belladonnastudiogo" },
       { name: "robots", content: "index, follow" },
     ],
     links: [
@@ -111,15 +111,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "icon",
         type: "image/png",
-        href: "/og_image.png?v=4",
+        href: "/og_image.png?v=5",
       },
       {
         rel: "apple-touch-icon",
-        href: "https://meubarbeirogo.netlify.app/og_image.png?v=4",
+        href: "https://belladonnastudiogo.netlify.app/og_image.png?v=5",
       },
       {
         rel: "canonical",
-        href: "https://meubarbeirogo.netlify.app",
+        href: "https://belladonnastudiogo.netlify.app",
       },
     ],
     scripts: [
@@ -128,9 +128,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "HairSalon",
-          "name": "Meu Barbeiro GO",
-          "image": "https://meubarbeirogo.netlify.app/og_image.png?v=4",
-          "url": "https://meubarbeirogo.netlify.app",
+          "name": "BellaDonna Studio GO",
+          "image": "https://belladonnastudiogo.netlify.app/og_image.png?v=5",
+          "url": "https://belladonnastudiogo.netlify.app",
           "telephone": "+5562999999999",
           "priceRange": "$$",
           "address": {
@@ -142,8 +142,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            "opens": "08:00",
-            "closes": "19:00"
+            "opens": "06:00",
+            "closes": "22:00"
           }
         })
       }
