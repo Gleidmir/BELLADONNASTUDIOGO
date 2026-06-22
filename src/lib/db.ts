@@ -996,6 +996,16 @@ export const getTenantConfig = (): TenantConfig => {
     return { registeredAt: new Date().toISOString(), subscriptionStatus: "expired" };
   }
   const tenantId = getCurrentTenantId();
+  
+  if (tenantId === "gleidmircristino@hotmail.com") {
+    return {
+      registeredAt: new Date().toISOString(),
+      subscriptionStatus: "active",
+      subscriptionPlan: "master",
+      subscriptionExpiresAt: undefined,
+    };
+  }
+
   const key = `mbg_tenant_config_${tenantId}`;
   
   // Tenta carregar do localStorage
@@ -1304,7 +1314,7 @@ export const getDashboardStats = async (
 export const getBarberShopProfile = async (tenantId: string): Promise<BarberShopProfile | null> => {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("barber_shops")
         .select("*")
         .eq("tenant_id", tenantId)
@@ -1312,14 +1322,35 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
       
       if (error) throw error;
       
+      if (!data && tenantId === "gleidmircristino@hotmail.com") {
+        try {
+          const { data: inserted, error: insertError } = await supabase
+            .from("barber_shops")
+            .insert({
+              tenant_id: tenantId,
+              name: "BellaDonna Studio GO",
+              subscription_plan: "master",
+              subscription_status: "active",
+            })
+            .select()
+            .maybeSingle();
+          
+          if (!insertError && inserted) {
+            data = inserted;
+          }
+        } catch (e) {
+          console.error("Erro ao criar perfil master no Supabase:", e);
+        }
+      }
+      
       if (data) {
         const prof: BarberShopProfile = {
           tenantId: data.tenant_id,
           name: data.name,
           logoUrl: data.logo_url || undefined,
           createdAt: data.created_at,
-          subscriptionPlan: data.subscription_plan || "mensal",
-          subscriptionStatus: data.subscription_status || "expired",
+          subscriptionPlan: data.tenant_id === "gleidmircristino@hotmail.com" ? "master" : (data.subscription_plan || "mensal"),
+          subscriptionStatus: data.tenant_id === "gleidmircristino@hotmail.com" ? "active" : (data.subscription_status || "expired"),
           subscriptionExpiresAt: data.subscription_expires_at || undefined,
         };
         if (!isServer) {
@@ -1363,8 +1394,8 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
           
           const updatedConfig: TenantConfig = {
             registeredAt: data.created_at || new Date().toISOString(),
-            subscriptionPlan: data.subscription_plan || undefined,
-            subscriptionStatus: data.subscription_status || "expired",
+            subscriptionPlan: data.tenant_id === "gleidmircristino@hotmail.com" ? "master" : (data.subscription_plan || undefined),
+            subscriptionStatus: data.tenant_id === "gleidmircristino@hotmail.com" ? "active" : (data.subscription_status || "expired"),
             subscriptionExpiresAt: data.subscription_expires_at || undefined,
           };
           window.localStorage.setItem(configKey, JSON.stringify(updatedConfig));
@@ -1389,6 +1420,16 @@ export const getBarberShopProfile = async (tenantId: string): Promise<BarberShop
 
   // Fallback local
   if (!isServer) {
+    if (tenantId === "gleidmircristino@hotmail.com") {
+      const prof: BarberShopProfile = {
+        tenantId,
+        name: "BellaDonna Studio GO",
+        subscriptionPlan: "master",
+        subscriptionStatus: "active",
+      };
+      window.localStorage.setItem(`mbg_profile_${tenantId}`, JSON.stringify(prof));
+      return prof;
+    }
     const stored = window.localStorage.getItem(`mbg_profile_${tenantId}`);
     if (stored) {
       try {
