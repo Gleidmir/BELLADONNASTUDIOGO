@@ -70,6 +70,7 @@ import {
   getBarberShopProfile,
   updateBarberShopProfile,
   type BarberShopProfile,
+  type SubscriptionCheck,
   DEFAULT_WORK_HOURS,
 } from "../lib/db";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -119,7 +120,7 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   // Subscription management state
-  const [subCheck, setSubCheck] = useState<{ status: "trial" | "active" | "expired"; daysLeft: number } | null>(null);
+  const [subCheck, setSubCheck] = useState<SubscriptionCheck | null>(null);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"mensal" | "trimestral" | "semestral" | "anual">("mensal");
 
@@ -674,6 +675,11 @@ function AdminDashboard() {
     (apt) => apt.date === todayStr && apt.status === "pending"
   );
 
+  // Total pending appointments
+  const totalPendingAppointments = appointments.filter(
+    (apt) => apt.status === "pending"
+  );
+
   if (!session || !stats) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">
@@ -853,7 +859,7 @@ function AdminDashboard() {
         <aside className="lg:col-span-1 space-y-2">
           {[
             { id: "dashboard" as const, label: "Dashboard", icon: Sliders },
-            { id: "agenda" as const, label: "Agenda / Agendamentos", icon: Calendar, badge: todaysAppointments.length },
+            { id: "agenda" as const, label: "Agenda / Agendamentos", icon: Calendar, badge: totalPendingAppointments.length },
             { id: "clientes" as const, label: "Clientes Cadastrados", icon: Users },
             { id: "servicos" as const, label: "Gerenciar Serviços", icon: Layers },
             { id: "barbeiros" as const, label: "Gerenciar Barbeiros", icon: Scissors },
