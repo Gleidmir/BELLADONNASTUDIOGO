@@ -150,6 +150,9 @@ CREATE TABLE IF NOT EXISTS public.barber_shops (
     tenant_id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     logo_url TEXT,
+    subscription_plan TEXT DEFAULT 'mensal',
+    subscription_status TEXT DEFAULT 'expired',
+    subscription_expires_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
