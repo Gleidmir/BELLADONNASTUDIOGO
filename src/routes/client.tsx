@@ -622,7 +622,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
 
     return (
       <div className="mb-6">
-        <p className="text-center text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Passos para agendar</p>
+        <p className="text-center text-[10px] uppercase tracking-wider text-zinc-300 font-bold">Passos para agendar</p>
         <div className="flex items-center justify-between mt-3 px-2">
           {stepsList.map((s, idx) => (
             <div key={s} className="flex flex-col items-center flex-1 relative">
@@ -646,7 +646,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
               </div>
               <span
                 className={`text-[9px] mt-1.5 font-bold transition-all ${
-                  idx === currentIndex ? "text-amber-400" : "text-zinc-500"
+                  idx === currentIndex ? "text-amber-400" : "text-zinc-400"
                 }`}
               >
                 {s}
@@ -690,7 +690,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
                     <h3 className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors leading-tight">
                       {svc.name}
                     </h3>
-                    <div className="flex items-center gap-1 text-[11px] text-zinc-500 mt-1">
+                    <div className="flex items-center gap-1 text-[11px] text-zinc-400 mt-1">
                       <Clock className="h-3.5 w-3.5" />
                       <span>{formatDuration(svc.duration)}</span>
                     </div>
@@ -718,7 +718,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
             <div className="mb-4 bg-zinc-900/30 border border-zinc-800/40 rounded-xl p-3 flex items-center gap-3">
               <ShopCircleLogo profile={shopProfile} />
               <div>
-                <p className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Serviço Selecionado</p>
+                <p className="text-[9px] uppercase tracking-wider text-zinc-300 font-bold">Serviço Selecionado</p>
                 <p className="text-xs font-bold text-white">{selectedService.name}</p>
                 <p className="text-xs text-sky-400 font-bold">{formatPrice(selectedService.price)}</p>
               </div>
@@ -770,7 +770,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
               <ShopCircleLogo profile={shopProfile} />
               <div>
                 <h3 className="text-xs font-bold text-white">{selectedService.name}</h3>
-                <div className="flex items-center gap-1.5 text-[10px] text-zinc-500 mt-0.5">
+                <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 mt-0.5">
                   <Clock className="h-3 w-3" />
                   <span>{formatDuration(selectedService.duration)}</span>
                   <span>•</span>
@@ -926,7 +926,7 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
             <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
               <ShopCircleLogo profile={shopProfile} />
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Serviço</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-300 font-bold">Serviço</p>
                 <h3 className="text-sm font-bold text-white">{selectedService.name}</h3>
                 <p className="text-[11px] text-sky-400 font-bold">{formatPrice(selectedService.price)}</p>
               </div>
@@ -934,17 +934,17 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
 
             <div className="flex gap-3">
               <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-3 flex-1">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Profissional</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-300 font-bold">Profissional</p>
                 <p className="font-bold text-white mt-0.5">{selectedBarber.name}</p>
               </div>
               <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-3 flex-1">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Duração</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-300 font-bold">Duração</p>
                 <p className="font-bold text-white mt-0.5">{formatDuration(selectedService.duration)}</p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-zinc-800 text-xs space-y-3">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Dados do Agendamento</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-300 font-bold">Dados do Agendamento</p>
               <div>
                 <label className="text-[10px] text-zinc-400 font-medium">Nome do Cliente</label>
                 <input
@@ -1253,7 +1253,7 @@ function MyAppointments({ clientPhone }: MyAppointmentsProps) {
               {/* Middle Row */}
               <div className="flex justify-between items-end border-t border-zinc-800/60 pt-3 text-xs">
                 <div>
-                  <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Data & Hora</p>
+                  <p className="text-[9px] text-zinc-300 uppercase tracking-wider font-bold">Data & Hora</p>
                   <p className="font-bold text-white mt-0.5">
                     {new Date(apt.date + "T12:00:00").toLocaleDateString("pt-BR", {
                       day: "2-digit",
@@ -1263,7 +1263,7 @@ function MyAppointments({ clientPhone }: MyAppointmentsProps) {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Valor</p>
+                  <p className="text-[9px] text-zinc-300 uppercase tracking-wider font-bold">Valor</p>
                   <p className="font-extrabold text-sky-400 mt-0.5">
                     {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(apt.price)}
                   </p>

@@ -904,7 +904,7 @@ function AdminDashboard() {
                   <p className="text-xs text-zinc-300">
                     Compartilhe este link com seus clientes nas redes sociais ou WhatsApp para que eles agendem sozinhos:
                   </p>
-                  <p className="text-[11px] font-mono text-zinc-500 mt-1 select-all break-all">
+                  <p className="text-[11px] font-mono text-zinc-300 mt-1 select-all break-all">
                     {typeof window !== "undefined" ? `${window.location.origin}/client?t=${session?.email || "default"}` : ""}
                   </p>
                 </div>
@@ -946,12 +946,12 @@ function AdminDashboard() {
                 ].map((kpi) => (
                   <div key={kpi.label} className="glass-card rounded-2xl p-5 hover:scale-[1.02] hover:glow-gold-sm transition-all duration-300 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{kpi.label}</span>
+                      <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-wider">{kpi.label}</span>
                       <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
                     </div>
                     <div className="mt-4">
                       <p className="text-xl font-extrabold text-white tracking-tight">{kpi.value}</p>
-                      <p className="text-[9px] text-zinc-500 font-semibold mt-1 uppercase">{kpi.trend}</p>
+                      <p className="text-[9px] text-zinc-400 font-semibold mt-1 uppercase">{kpi.trend}</p>
                     </div>
                   </div>
                 ))}
@@ -1044,8 +1044,8 @@ function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-2xl p-4">
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">Controle de Horários</h2>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">Gerencie os atendimentos agendados pelos clientes.</p>
+                  <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">Agenda e Atendimentos</h2>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">Gerencie os atendimentos agendados pelos clientes.</p>
                 </div>
                 
                 {/* Filter Selector */}
@@ -1167,8 +1167,8 @@ function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-2xl p-4">
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">Clientes Cadastrados</h2>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">Veja a lista de clientes cadastrados no sistema.</p>
+                  <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">Clientes Cadastrados</h2>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">Veja a lista de clientes cadastrados no sistema.</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
@@ -1207,13 +1207,13 @@ function AdminDashboard() {
                   onSubmit={handleClientSubmit}
                   className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                     {editingClient ? "Editar Cliente" : "Cadastrar Novo Cliente"}
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Nome do Cliente</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Nome do Cliente</label>
                       <input
                         type="text"
                         required
@@ -1225,7 +1225,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Celular (WhatsApp - com DDD)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Celular (WhatsApp - com DDD)</label>
                       <input
                         type="text"
                         required
@@ -1237,7 +1237,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">E-mail (Opcional)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">E-mail (Opcional)</label>
                       <input
                         type="email"
                         value={clientEmail}
@@ -1353,8 +1353,8 @@ function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex justify-between items-center glass-card rounded-2xl p-4">
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">Gerenciador de Serviços</h2>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">Configure os serviços disponíveis para agendamento dos clientes.</p>
+                  <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">Gerenciador de Serviços</h2>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">Configure os serviços disponíveis para agendamento dos clientes.</p>
                 </div>
                 {!showServiceForm && (
                   <button
@@ -1378,13 +1378,13 @@ function AdminDashboard() {
                   onSubmit={handleServiceSubmit}
                   className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                     {editingService ? "Editar Serviço" : "Cadastrar Novo Serviço"}
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Nome do Serviço</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Nome do Serviço</label>
                       <input
                         type="text"
                         required
@@ -1396,7 +1396,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Valor (R$)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Valor (R$)</label>
                       <input
                         type="number"
                         required
@@ -1409,7 +1409,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Duração (Minutos)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Duração (Minutos)</label>
                       <input
                         type="number"
                         required
@@ -1503,8 +1503,8 @@ function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex justify-between items-center glass-card rounded-2xl p-4">
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">Gerenciador de Profissionais</h2>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">Adicione, edite ou remova profissionais do seu salão de beleza.</p>
+                  <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">Gerenciador de Profissionais</h2>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">Adicione, edite ou remova profissionais do seu salão de beleza.</p>
                 </div>
                 {!showBarberForm && (
                   <button
@@ -1533,13 +1533,13 @@ function AdminDashboard() {
                   onSubmit={handleBarberSubmit}
                   className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                     {editingBarber ? "Editar Profissional" : "Cadastrar Nova Profissional"}
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Nome da Profissional</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Nome da Profissional</label>
                       <input
                         type="text"
                         required
@@ -1551,7 +1551,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Celular (WhatsApp - com DDD)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Celular (WhatsApp - com DDD)</label>
                       <input
                         type="text"
                         value={barberPhone}
@@ -1562,7 +1562,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Foto (URL da Imagem - Opcional)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Foto (URL da Imagem - Opcional)</label>
                       <input
                         type="url"
                         value={barberAvatar}
@@ -1576,7 +1576,7 @@ function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     {/* Dias de Atendimento */}
                     <div className="md:col-span-2">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block mb-2">Dias de Atendimento</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300 block mb-2">Dias de Atendimento</label>
                       <div className="flex flex-wrap gap-2">
                         {weekdaysList.map((day) => {
                           const isChecked = barberWorkDays.includes(day.value);
@@ -1608,7 +1608,7 @@ function AdminDashboard() {
 
                     {/* Horários de Início e Fim */}
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Horário do Turno</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300 block mb-1.5">Horário do Turno</label>
                       <div className="flex items-center gap-2">
                         <select
                           value={barberStartTime}
@@ -1641,7 +1641,7 @@ function AdminDashboard() {
 
                   {/* Horários Individuais Editáveis */}
                   <div className="pt-2">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block mb-2">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300 block mb-2">
                       Horários de Atendimento Individuais (Selecione para Ativar/Desativar)
                     </label>
                     <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
@@ -1672,7 +1672,7 @@ function AdminDashboard() {
                   </div>
 
                   <div className="pt-2">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Datas de Folga Específicas / Bloqueios (Formato: AAAA-MM-DD, separados por vírgula)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-300 block">Datas de Folga Específicas / Bloqueios (Formato: AAAA-MM-DD, separados por vírgula)</label>
                     <input
                       type="text"
                       value={barberBlockedDates}
@@ -1826,7 +1826,7 @@ function AdminDashboard() {
                     className="space-y-4"
                   >
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Nome do Salão</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-200">Nome do Salão</label>
                       <input
                         type="text"
                         required
@@ -1838,7 +1838,7 @@ function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Link do Logotipo / Imagem (URL)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-200">Link do Logotipo / Imagem (URL)</label>
                       <input
                         type="url"
                         value={shopLogoUrl}
@@ -1846,7 +1846,7 @@ function AdminDashboard() {
                         placeholder="Ex: https://link-da-imagem.com/logo.png"
                         className="w-full rounded-xl bg-zinc-950/90 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all mt-1.5"
                       />
-                      <p className="text-[10px] text-zinc-500 mt-1.5 leading-relaxed">
+                      <p className="text-[10px] text-zinc-300 mt-1.5 leading-relaxed">
                         Copie e cole o endereço/link de uma foto pública (do Instagram, Facebook, Imgur, Postimages, etc.). Se não colocar nenhuma imagem, será usada a logo temática padrão de Goiás.
                       </p>
                     </div>

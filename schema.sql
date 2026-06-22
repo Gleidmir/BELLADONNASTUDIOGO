@@ -185,7 +185,7 @@ SECURITY DEFINER
 SET search_path = public;
 
 -- Revoga a execução pública por segurança (Advisor do Supabase)
-REVOKE EXECUTE ON FUNCTION public.handle_deleted_auth_user() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.handle_deleted_auth_user() FROM PUBLIC, anon, authenticated;
 
 -- Trigger para automatizar a limpeza caso o e-mail seja apagado no painel do Supabase
 DROP TRIGGER IF EXISTS on_auth_user_deleted ON auth.users;
@@ -221,7 +221,7 @@ SECURITY DEFINER
 SET search_path = public;
 
 -- Revoga a execução por usuários anônimos / público
-REVOKE EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) FROM PUBLIC, anon;
 
 -- Permite a execução apenas por usuários autenticados (como você no painel)
 GRANT EXECUTE ON FUNCTION public.delete_barber_shop_cascade(TEXT) TO authenticated;
@@ -247,7 +247,7 @@ SECURITY DEFINER
 SET search_path = public;
 
 -- Revoga a execução pública por segurança (Advisor do Supabase)
-REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
 
 -- Trigger para automatizar a criação do perfil da barbearia após o cadastro
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

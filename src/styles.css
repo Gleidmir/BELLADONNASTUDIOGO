@@ -216,7 +216,7 @@
 }
 
 .bg-gold-gradient {
-  background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 50%, #db2777 100%) !important;
+  background: linear-gradient(135deg, #db2777 0%, #f472b6 50%, #fbcfe8 100%) !important;
   color: #ffffff !important;
 }
 
