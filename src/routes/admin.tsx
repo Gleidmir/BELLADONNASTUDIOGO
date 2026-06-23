@@ -583,13 +583,16 @@ function AdminDashboard() {
   };
 
   const getClientReminderLink = (apt: Appointment) => {
-    let cleanPhone = apt.clientPhone.replace(/\D/g, "");
+    let rawPhone = apt.clientPhone;
+    let cleanPhone = rawPhone.replace(/\D/g, "");
+    
     if (cleanPhone.length >= 10 && cleanPhone.length <= 11 && !cleanPhone.startsWith("55")) {
       cleanPhone = "55" + cleanPhone;
     }
     
+    const shopDisplayName = shopName || "BellaDonna Studio GO";
     const dateStr = new Date(apt.date + "T12:00:00").toLocaleDateString("pt-BR");
-    const message = `Olá, ${apt.clientName}! Passando para lembrar do seu agendamento no BellaDonna Studio GO:\n\n` +
+    const message = `Olá, ${apt.clientName}! Passando para lembrar do seu agendamento no *${shopDisplayName}*:\n\n` +
       `💇 *Serviço:* ${apt.serviceName}\n` +
       `📅 *Data:* ${dateStr}\n` +
       `⏰ *Horário:* ${apt.time}\n` +
@@ -1181,7 +1184,7 @@ function AdminDashboard() {
                         setClientEmail("");
                         setShowClientForm(true);
                       }}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2.5 text-xs font-bold transition-all shadow shadow-amber-500/10 cursor-pointer"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow shadow-purple-500/10 cursor-pointer"
                     >
                       <Plus className="h-4 w-4" /> Novo Cliente
                     </button>
@@ -1195,7 +1198,7 @@ function AdminDashboard() {
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
                       placeholder="Pesquisar por nome ou celular"
-                      className="w-full rounded-xl bg-zinc-950/90 pl-9 pr-4 py-2.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                      className="w-full rounded-xl bg-zinc-950/90 pl-9 pr-4 py-2.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1205,9 +1208,10 @@ function AdminDashboard() {
               {showClientForm && (
                 <form
                   onSubmit={handleClientSubmit}
-                  className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
+                  className="glass-card border border-purple-500/20 shadow-lg shadow-purple-500/5 rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
+                    <Users className="h-4 w-4" />
                     {editingClient ? "Editar Cliente" : "Cadastrar Novo Cliente"}
                   </h3>
                   
@@ -1220,7 +1224,7 @@ function AdminDashboard() {
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
                         placeholder="Ex: João da Silva"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1232,7 +1236,7 @@ function AdminDashboard() {
                         value={clientPhone}
                         onChange={(e) => setClientPhone(e.target.value)}
                         placeholder="Ex: (62) 99329-9120"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1243,7 +1247,7 @@ function AdminDashboard() {
                         value={clientEmail}
                         onChange={(e) => setClientEmail(e.target.value)}
                         placeholder="Ex: joao@gmail.com"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -1264,7 +1268,7 @@ function AdminDashboard() {
                     </button>
                     <button
                       type="submit"
-                      className="rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-2.5 text-xs font-bold transition-all shadow"
+                      className="rounded-xl bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 text-xs font-bold transition-all shadow"
                     >
                       {editingClient ? "Salvar Alterações" : "Adicionar Cliente"}
                     </button>
@@ -1309,7 +1313,7 @@ function AdminDashboard() {
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <a
-                                href={`https://wa.me/55${client.phone}?text=Olá%20${encodeURIComponent(client.name)}!%20Tudo%20bem%3F%20Entramos%20em%20contato%20pelo%20Salão.`}
+                                href={`https://wa.me/55${client.phone}?text=Olá%20${encodeURIComponent(client.name)}!%20Tudo%20bem%3F%20Entramos%20em%20contato%20pelo%20*${encodeURIComponent(shopName || "Salão")}*.`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 rounded-lg border border-green-500/30 bg-zinc-950 px-2.5 py-1.5 text-[10px] font-bold text-green-500 hover:text-green-400 hover:border-green-500/50 transition-all cursor-pointer"
@@ -1365,7 +1369,7 @@ function AdminDashboard() {
                       setServiceDuration("");
                       setShowServiceForm(true);
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2.5 text-xs font-bold transition-all shadow shadow-amber-500/10"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow shadow-pink-500/10"
                   >
                     <Plus className="h-4 w-4" /> Novo Serviço
                   </button>
@@ -1376,9 +1380,10 @@ function AdminDashboard() {
               {showServiceForm && (
                 <form
                   onSubmit={handleServiceSubmit}
-                  className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
+                  className="glass-card border border-pink-500/20 shadow-lg shadow-pink-500/5 rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-pink-400 flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
                     {editingService ? "Editar Serviço" : "Cadastrar Novo Serviço"}
                   </h3>
                   
@@ -1391,7 +1396,7 @@ function AdminDashboard() {
                         value={serviceName}
                         onChange={(e) => setServiceName(e.target.value)}
                         placeholder="Ex: Corte Degradê"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-pink-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1404,7 +1409,7 @@ function AdminDashboard() {
                         value={servicePrice}
                         onChange={(e) => setServicePrice(e.target.value)}
                         placeholder="Ex: 45.00"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-pink-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1416,7 +1421,7 @@ function AdminDashboard() {
                         value={serviceDuration}
                         onChange={(e) => setServiceDuration(e.target.value)}
                         placeholder="Ex: 30"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-pink-500 focus:outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -1434,7 +1439,7 @@ function AdminDashboard() {
                     </button>
                     <button
                       type="submit"
-                      className="rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-2.5 text-xs font-bold transition-all shadow"
+                      className="rounded-xl bg-pink-600 hover:bg-pink-500 text-white px-6 py-2.5 text-xs font-bold transition-all shadow"
                     >
                       {editingService ? "Salvar Alterações" : "Adicionar Serviço"}
                     </button>
@@ -1520,7 +1525,7 @@ function AdminDashboard() {
                       setBarberBlockedDates("");
                       setShowBarberForm(true);
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2.5 text-xs font-bold transition-all shadow shadow-amber-500/10"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-zinc-950 px-4 py-2.5 text-xs font-bold transition-all shadow shadow-emerald-500/10"
                   >
                     <Plus className="h-4 w-4" /> Nova Profissional
                   </button>
@@ -1531,9 +1536,10 @@ function AdminDashboard() {
               {showBarberForm && (
                 <form
                   onSubmit={handleBarberSubmit}
-                  className="glass-card rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
+                  className="glass-card border border-emerald-500/20 shadow-lg shadow-emerald-500/5 rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-3 duration-200"
                 >
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                    <Scissors className="h-4 w-4" />
                     {editingBarber ? "Editar Profissional" : "Cadastrar Nova Profissional"}
                   </h3>
                   
@@ -1546,7 +1552,7 @@ function AdminDashboard() {
                         value={barberName}
                         onChange={(e) => setBarberName(e.target.value)}
                         placeholder="Ex: Rafael Silva"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1557,7 +1563,7 @@ function AdminDashboard() {
                         value={barberPhone}
                         onChange={(e) => setBarberPhone(e.target.value)}
                         placeholder="Ex: (62) 99329-9120"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
                       />
                     </div>
 
@@ -1568,7 +1574,7 @@ function AdminDashboard() {
                         value={barberAvatar}
                         onChange={(e) => setBarberAvatar(e.target.value)}
                         placeholder="Deixe em branco para usar foto padrão"
-                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                        className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -1595,7 +1601,7 @@ function AdminDashboard() {
                               }}
                               className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
                                 isChecked
-                                  ? "bg-amber-500 text-zinc-950 border-amber-500 shadow-md shadow-amber-500/10"
+                                  ? "bg-emerald-600 text-zinc-950 border-emerald-600 shadow-md shadow-emerald-600/10"
                                   : "bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-white"
                               }`}
                             >
@@ -1618,7 +1624,7 @@ function AdminDashboard() {
                             const updated = DEFAULT_WORK_HOURS.filter(h => h >= newStart && h <= barberEndTime);
                             setBarberWorkHours(updated);
                           }}
-                          className="flex-1 rounded-xl bg-zinc-950 px-3 py-2.5 text-xs text-white ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          className="flex-1 rounded-xl bg-zinc-950 px-3 py-2.5 text-xs text-white ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         >
                           {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1631,7 +1637,7 @@ function AdminDashboard() {
                             const updated = DEFAULT_WORK_HOURS.filter(h => h >= barberStartTime && h <= newEnd);
                             setBarberWorkHours(updated);
                           }}
-                          className="flex-1 rounded-xl bg-zinc-950 px-3 py-2.5 text-xs text-white ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          className="flex-1 rounded-xl bg-zinc-950 px-3 py-2.5 text-xs text-white ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         >
                           {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1660,7 +1666,7 @@ function AdminDashboard() {
                             }}
                             className={`px-2 py-1.5 text-center text-xs font-bold rounded-xl border transition-all ${
                               isChecked
-                                ? "bg-amber-500 text-zinc-950 border-amber-500 shadow-md shadow-amber-500/10"
+                                ? "bg-emerald-600 text-zinc-950 border-emerald-600 shadow-md shadow-emerald-600/10"
                                 : "bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-white"
                             }`}
                           >
@@ -1678,7 +1684,7 @@ function AdminDashboard() {
                       value={barberBlockedDates}
                       onChange={(e) => setBarberBlockedDates(e.target.value)}
                       placeholder="Ex: 2026-06-12, 2026-06-25 (deixe em branco se nenhuma)"
-                      className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                      className="w-full rounded-xl bg-zinc-950 mt-1.5 px-4 py-3 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -1703,7 +1709,7 @@ function AdminDashboard() {
                     </button>
                     <button
                       type="submit"
-                      className="rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-2.5 text-xs font-bold transition-all shadow"
+                      className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-zinc-950 px-6 py-2.5 text-xs font-bold transition-all shadow"
                     >
                       {editingBarber ? "Salvar Alterações" : "Adicionar Profissional"}
                     </button>
@@ -1796,7 +1802,7 @@ function AdminDashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Form Column */}
-                <div className="md:col-span-2 glass-card rounded-3xl p-6 space-y-4">
+                <div className="md:col-span-2 glass-card border border-indigo-500/20 shadow-lg shadow-indigo-500/5 rounded-3xl p-6 space-y-4">
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
@@ -1833,7 +1839,7 @@ function AdminDashboard() {
                         value={shopName}
                         onChange={(e) => setShopName(e.target.value)}
                         placeholder="Ex: BellaDonna Studio"
-                        className="w-full rounded-xl bg-zinc-950/90 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all mt-1.5"
+                        className="w-full rounded-xl bg-zinc-950/90 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all mt-1.5"
                       />
                     </div>
 
@@ -1844,7 +1850,7 @@ function AdminDashboard() {
                         value={shopLogoUrl}
                         onChange={(e) => setShopLogoUrl(e.target.value)}
                         placeholder="Ex: https://link-da-imagem.com/logo.png"
-                        className="w-full rounded-xl bg-zinc-950/90 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all mt-1.5"
+                        className="w-full rounded-xl bg-zinc-950/90 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all mt-1.5"
                       />
                       <p className="text-[10px] text-zinc-300 mt-1.5 leading-relaxed">
                         Copie e cole o endereço/link de uma foto pública (do Instagram, Facebook, Imgur, Postimages, etc.). Se não colocar nenhuma imagem, será usada a logo temática padrão de Goiás.
@@ -1854,7 +1860,7 @@ function AdminDashboard() {
                     <button
                       type="submit"
                       disabled={savingProfile}
-                      className="w-full rounded-xl bg-amber-500 py-3.5 text-xs font-bold tracking-wide text-zinc-950 hover:bg-amber-400 active:scale-95 transition-all shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 mt-2"
+                      className="w-full rounded-xl bg-indigo-600 py-3.5 text-xs font-bold tracking-wide text-white hover:bg-indigo-500 active:scale-95 transition-all shadow-lg shadow-indigo-500/10 flex items-center justify-center gap-2 mt-2"
                     >
                       {savingProfile ? (
                         <>

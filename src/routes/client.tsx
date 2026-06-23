@@ -233,7 +233,9 @@ function ClientDashboard() {
             Este salão de beleza está temporariamente indisponível para novos agendamentos online. Por favor, entre em contato diretamente com o estabelecimento para mais informações.
           </p>
           <a
-            href={`https://wa.me/${DEFAULT_ADMIN_PHONE}`}
+            href={`https://wa.me/${DEFAULT_ADMIN_PHONE}?text=${encodeURIComponent(
+              `Olá! Gostaria de falar com o estabelecimento *${shopProfile?.name || "BellaDonna Studio GO"}*.`
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 text-xs font-bold transition-all cursor-pointer shadow-lg shadow-emerald-600/10 active:scale-95"
@@ -324,7 +326,7 @@ function ClientDashboard() {
             onLogout={handleLogout}
           />
         ) : (
-          <MyAppointments clientPhone={session.phone} />
+          <MyAppointments clientPhone={session.phone} shopProfile={shopProfile} />
         )}
       </main>
 
@@ -545,7 +547,8 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
     }
 
     const dateStr = new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR");
-    const message = `Olá, ${selectedBarber.name}! Acabei de realizar um agendamento pelo aplicativo:\n\n` +
+    const shopDisplayName = shopProfile?.name || "BellaDonna Studio GO";
+    const message = `Olá, ${selectedBarber.name}! Acabei de realizar um agendamento no *${shopDisplayName}* pelo aplicativo:\n\n` +
       `👤 *Cliente:* ${customClientName}\n` +
       `📞 *Telefone:* ${customClientPhone}\n` +
       `💇 *Serviço:* ${selectedService.name}\n` +
@@ -1062,9 +1065,10 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
 /* ========================================================================= */
 interface MyAppointmentsProps {
   clientPhone: string;
+  shopProfile: BarberShopProfile | null;
 }
 
-function MyAppointments({ clientPhone }: MyAppointmentsProps) {
+function MyAppointments({ clientPhone, shopProfile }: MyAppointmentsProps) {
   const [apts, setApts] = useState<Appointment[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1175,7 +1179,8 @@ function MyAppointments({ clientPhone }: MyAppointmentsProps) {
     }
 
     const dateStr = new Date(apt.date + "T12:00:00").toLocaleDateString("pt-BR");
-    const message = `Olá, ${apt.barberName}! Sou o cliente ${apt.clientName} e estou enviando esta mensagem para confirmar meu agendamento no aplicativo:\n\n` +
+    const shopDisplayName = shopProfile?.name || "BellaDonna Studio GO";
+    const message = `Olá, ${apt.barberName}! Sou o cliente ${apt.clientName} e estou enviando esta mensagem para confirmar meu agendamento no *${shopDisplayName}* pelo aplicativo:\n\n` +
       `💇 *Serviço:* ${apt.serviceName}\n` +
       `📅 *Data:* ${dateStr}\n` +
       `⏰ *Horário:* ${apt.time}\n\n` +
