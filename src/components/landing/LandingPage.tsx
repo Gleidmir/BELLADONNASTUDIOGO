@@ -368,6 +368,13 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [showPlans, setShowPlans] = useState(false);
 
+  const currentUser = getCurrentUser();
+  let shopName = "";
+  if (typeof window !== "undefined" && currentUser && currentUser.role === "admin") {
+    shopName = window.localStorage.getItem(`mbg_shop_name_${currentUser.email}`) || "";
+  }
+  const displayShopName = shopName ? `*${shopName.toUpperCase()}*` : "*[NOME DO SEU SALÃO]*";
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isPWA = window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone;
@@ -507,7 +514,7 @@ export function LandingPage() {
                       A ativação do plano é realizada enviando o comprovante via WhatsApp.
                     </p>
                     <a
-                      href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (${p.price}) para o meu salão ${shopProfile?.name ? `*${shopProfile.name.toUpperCase()}*` : "*[NOME DO SEU SALÃO]*"} no aplicativo *BellaDonna Studio GO*.`)}`}
+                      href={`https://wa.me/5562993299120?text=${encodeURIComponent(`Olá Gleidmir! Gostaria de adquirir o plano *${p.name}* (${p.price}) para o meu salão ${displayShopName} no aplicativo *BellaDonna Studio GO*.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`w-full inline-flex items-center justify-center gap-1.5 rounded-xl py-3 text-xs font-bold transition-all cursor-pointer text-center ${
