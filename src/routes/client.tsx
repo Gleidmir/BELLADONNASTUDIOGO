@@ -1005,14 +1005,14 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
             <CheckCircle2 className="h-8 w-8" />
           </div>
           
-          <h2 className="text-lg font-extrabold text-white mt-4">Agendamento Realizado!</h2>
+          <h2 className="text-lg font-extrabold text-white mt-4">Agendamento Confirmado!</h2>
           <p className="text-zinc-400 text-xs mt-2 max-w-xs mx-auto leading-relaxed">
             Seu horário foi agendado e enviado para o salão. Te esperamos lá!
           </p>
 
-          <div className="bg-zinc-900/60 border border-amber-500/20 rounded-3xl p-5 my-6 text-left relative overflow-hidden holo-card glow-gold shadow-2xl">
+          <div className="bg-zinc-900/60 border border-amber-500/20 rounded-3xl p-5 my-6 text-left relative overflow-hidden holo-card glow-emerald shadow-2xl">
             {/* Holographic glowing backdrops */}
-            <div className="absolute -left-12 -top-12 w-24 h-24 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+            <div className="absolute -left-12 -top-12 w-24 h-24 rounded-full bg-pink-500/10 blur-2xl pointer-events-none" />
             <div className="absolute -right-12 -bottom-12 w-24 h-24 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none" />
             
             {/* Ticket teeth decorations */}
@@ -1020,17 +1020,41 @@ function BookingFlow({ clientPhone, clientName, shopProfile, onSessionUpdate, on
             <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-zinc-950 border-l border-zinc-900" />
             
             <div className="text-center pb-5 border-b border-dashed border-zinc-800/80">
-              <span className="text-white font-extrabold uppercase">{shopProfile?.name || "BellaDonna Studio GO"}</span>
+              <span className="text-[10px] text-pink-400 uppercase tracking-widest font-black flex items-center justify-center gap-1.5 animate-pulse">
+                <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
+                COMPROVANTE DE RESERVA VIP
+                <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
+              </span>
+              <p className="text-2xl font-mono text-white font-extrabold mt-2 tracking-wide glow-emerald-sm">{selectedTime}</p>
+              <p className="text-xs text-zinc-400 font-medium">
+                {new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR", {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "2-digit",
+                })}
+              </p>
             </div>
-            
-            <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 space-y-3.5 text-xs text-left">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-white font-black tracking-wider uppercase">PROFISSIONAL</span>
-                <span className="text-pink-400 font-extrabold">{selectedBarber.name}</span>
+
+            <div className="space-y-3 pt-5 text-xs font-mono text-zinc-300">
+              <div className="flex justify-between gap-4">
+                <span className="text-white font-black tracking-wider uppercase shrink-0">ESTABELECIMENTO:</span>
+                <span className="text-pink-400 font-extrabold uppercase text-right text-wrap max-w-[65%]">{shopProfile?.name || "BellaDonna Studio GO"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-white font-black tracking-wider uppercase">CLIENTE:</span>
-                <span className="text-pink-400 font-extrabold">{customClientName}</span>
+              <div className="flex justify-between gap-4">
+                <span className="text-white font-black tracking-wider uppercase shrink-0">SERVIÇO:</span>
+                <span className="text-pink-400 font-extrabold uppercase text-right text-wrap max-w-[65%]">{selectedService.name}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-white font-black tracking-wider uppercase shrink-0">VALOR:</span>
+                <span className="text-pink-400 font-extrabold uppercase text-right">{formatPrice(selectedService.price)}</span>
+              </div>
+              <div className="flex justify-between items-center gap-4">
+                <span className="text-white font-black tracking-wider uppercase shrink-0">PROFISSIONAL:</span>
+                <span className="text-pink-400 font-extrabold uppercase text-right">{selectedBarber.name}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-white font-black tracking-wider uppercase shrink-0">CLIENTE:</span>
+                <span className="text-pink-400 font-extrabold uppercase text-right text-wrap max-w-[65%]">{customClientName}</span>
               </div>
             </div>
           </div>
