@@ -240,7 +240,7 @@ function LoginPage() {
             /* CLIENT FORM */
             <form onSubmit={handleClientSubmit} className="space-y-4">
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Seu Nome</label>
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-pink-400">Seu Nome</label>
                 <div className="relative mt-1.5">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <input
@@ -249,13 +249,13 @@ function LoginPage() {
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="Ex: Maria Silva"
-                    className="w-full rounded-xl bg-zinc-950/90 pl-11 pr-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                    className="w-full rounded-xl bg-zinc-950/90 pl-11 pr-4 py-3.5 text-sm text-pink-300 placeholder:text-zinc-600 ring-2 ring-pink-500/50 shadow-[0_0_10px_rgba(244,114,182,0.25)] focus:ring-pink-400 focus:outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Celular (WhatsApp)</label>
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-pink-400">Celular (WhatsApp)</label>
                 <div className="relative mt-1.5">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <input
@@ -264,7 +264,7 @@ function LoginPage() {
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value.replace(/\D/g, ""))}
                     placeholder="Ex: 62999998888"
-                    className="w-full rounded-xl bg-zinc-950/90 pl-11 pr-4 py-3.5 text-sm text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                    className="w-full rounded-xl bg-zinc-950/90 pl-11 pr-4 py-3.5 text-sm text-pink-300 placeholder:text-zinc-650 ring-2 ring-pink-500/50 shadow-[0_0_10px_rgba(244,114,182,0.25)] focus:ring-pink-400 focus:outline-none transition-all"
                   />
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-1">Apenas números com DDD</p>

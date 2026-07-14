@@ -164,7 +164,7 @@ export function MasterAdminPanel() {
           : "N/A";
     
     const message = `Olá! Passando para informar que sua licença do *BellaDonna Studio GO* foi ativada com sucesso! 🎉\n\n` +
-      `💈 *Salão:* ${shop.name}\n` +
+      `💈 *Salão:* *${shop.name.toUpperCase()}*\n` +
       `📦 *Plano:* ${planLabel.charAt(0).toUpperCase() + planLabel.slice(1)}\n` +
       `📅 *Validade:* ${expiryStr}\n\n` +
       `Obrigado pela parceria e boas vendas! 🚀`;
@@ -248,10 +248,10 @@ export function MasterAdminPanel() {
   return (
     <div className="space-y-6">
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-zinc-900/40 ring-1 ring-zinc-800 rounded-3xl p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-card rounded-3xl p-6">
         <div className="space-y-1 text-left">
           <h2 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-amber-500" />
+            <Sparkles className="h-5 w-5 text-pink-400" />
             Painel do Administrador Master
           </h2>
           <p className="text-xs text-zinc-400">
@@ -261,20 +261,20 @@ export function MasterAdminPanel() {
         <button
           onClick={loadShops}
           disabled={loading}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2.5 text-xs font-bold border border-zinc-800 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-950/40 border border-indigo-500/50 hover:bg-indigo-600 hover:border-indigo-400 text-indigo-400 hover:text-white px-4 py-2.5 text-xs font-black transition-all cursor-pointer shadow-lg shadow-indigo-500/5 hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-50 shrink-0"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Sincronizar
         </button>
       </div>
 
       {/* Seção retrátil de Códigos de Reativação */}
-      <div className="bg-zinc-900/40 ring-1 ring-zinc-800 rounded-3xl p-6">
+      <div className="glass-card rounded-3xl p-6">
         <button
           onClick={() => setShowCodes(!showCodes)}
           className="w-full flex items-center justify-between text-left focus:outline-none"
         >
           <span className="text-sm font-black tracking-tight text-white flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-amber-500" />
+            <Sparkles className="h-5 w-5 text-pink-400" />
             CÓDIGOS DE REATIVAÇÃO
           </span>
           <div className="text-zinc-500 hover:text-white transition-colors">
@@ -291,10 +291,10 @@ export function MasterAdminPanel() {
               { label: "ANUAL", code: "ATIVA_ANU_MBG", days: "365 DIAS" },
               { label: "VIP VITALÍCIO", code: "MASTER_MBG_VIP", days: "PERMANENTE" },
             ].map((item, idx) => (
-              <div key={idx} className="bg-zinc-950 ring-1 ring-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between gap-2.5">
+              <div key={idx} className="glass-card rounded-2xl p-4 flex flex-col justify-between gap-2.5">
                 <div className="text-left">
                   <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider">{item.label} ({item.days})</span>
-                  <div className="font-mono text-xs text-amber-500 mt-1 select-all font-bold">{item.code}</div>
+                  <div className="font-mono text-xs text-pink-400 mt-1 select-all font-bold">{item.code}</div>
                 </div>
                 <div className="flex gap-1">
                   <button
@@ -322,7 +322,7 @@ export function MasterAdminPanel() {
       </div>
 
       {/* Listagem e Busca */}
-      <div className="bg-zinc-900/40 ring-1 ring-zinc-800 rounded-3xl p-6 space-y-6">
+      <div className="glass-card rounded-3xl p-6 space-y-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
@@ -331,7 +331,7 @@ export function MasterAdminPanel() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nome ou e-mail..."
-              className="w-full rounded-xl bg-zinc-950/90 pl-9 pr-4 py-2.5 text-xs text-white placeholder:text-zinc-600 ring-1 ring-zinc-800 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+              className="w-full rounded-xl bg-zinc-950 mt-1 pl-9 pr-4 py-2.5 text-xs text-pink-300 placeholder:text-zinc-600 ring-2 ring-pink-500/50 shadow-[0_0_10px_rgba(244,114,182,0.25)] focus:ring-pink-400 focus:outline-none transition-all"
             />
           </div>
           <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-wider">
@@ -341,7 +341,7 @@ export function MasterAdminPanel() {
 
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-3 text-zinc-500">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500" />
             <span className="text-xs font-semibold">Buscando do Supabase...</span>
           </div>
         ) : filteredShops.length === 0 ? (
@@ -353,7 +353,7 @@ export function MasterAdminPanel() {
             {filteredShops.map((shop) => (
               <div
                 key={shop.tenantId}
-                className="bg-zinc-950 ring-1 ring-zinc-800/80 rounded-2xl overflow-hidden transition-all duration-300"
+                className="glass-card rounded-2xl overflow-hidden transition-all duration-300"
               >
                 {/* Cabeçalho do Card */}
                 <div

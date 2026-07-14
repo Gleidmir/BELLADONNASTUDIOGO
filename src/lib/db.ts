@@ -830,7 +830,7 @@ export const triggerWhatsAppNotification = async (appointment: Appointment) => {
 
       const tenantId = getCurrentTenantId();
       const shopProfile = await getBarberShopProfile(tenantId);
-      const shopName = shopProfile?.name || "BellaDonna Studio GO";
+      const shopName = (shopProfile?.name || "BellaDonna Studio GO").toUpperCase();
 
       const dateStr = new Date(appointment.date + "T12:00:00").toLocaleDateString("pt-BR");
       const messageText = `Olá, ${appointment.barberName}! Você tem um novo agendamento no *${shopName}*:\n\n` +

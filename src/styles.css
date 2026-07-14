@@ -189,8 +189,8 @@
   background: rgba(12, 12, 14, 0.72) !important;
   backdrop-filter: blur(20px) saturate(140%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.055) !important;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(244, 114, 182, 0.15) !important;
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6), 0 0 15px rgba(244, 114, 182, 0.08) !important;
 }
 
 .glow-emerald {
