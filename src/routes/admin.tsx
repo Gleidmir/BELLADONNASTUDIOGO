@@ -1979,7 +1979,7 @@ function SubscriptionSection({
   const currentPlan = plans.find(p => p.id === selectedPlan)!;
 
   const getWhatsAppLink = () => {
-    const message = `Olá Gleidmir! Realizei o pagamento do plano *${currentPlan.name}* (${currentPlan.price}) para o meu salão *BELLADONNA GO*. Aqui está o comprovante!`;
+    const message = `Olá Gleidmir! Realizei o pagamento do plano *${currentPlan.name}* (${currentPlan.price}) para o meu salão *${shopName.toUpperCase()}* no aplicativo *BellaDonna Studio GO*. Aqui está o comprovante!`;
     return `https://wa.me/5562993299120?text=${encodeURIComponent(message)}`;
   };
 
