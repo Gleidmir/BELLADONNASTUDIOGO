@@ -368,16 +368,56 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [showPlans, setShowPlans] = useState(false);
 
-  const currentUser = getCurrentUser();
   let shopName = "";
-  if (typeof window !== "undefined" && currentUser && currentUser.role === "admin") {
-    const profileStr = window.localStorage.getItem(`mbg_profile_${currentUser.email}`);
-    if (profileStr) {
-      try {
-        const profile = JSON.parse(profileStr);
-        shopName = profile?.name || "";
-      } catch (e) {
-        console.error(e);
+  if (typeof window !== "undefined") {
+    const currentUser = getCurrentUser();
+    // 1. Try to get from the current logged-in admin session
+    if (currentUser && currentUser.role === "admin" && currentUser.email) {
+      const profileStr = window.localStorage.getItem(`mbg_profile_${currentUser.email}`);
+      if (profileStr) {
+        try {
+          const profile = JSON.parse(profileStr);
+          shopName = profile?.name || "";
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    // 2. Try to get from the client tenant if saved
+    if (!shopName) {
+      const savedTenant = window.localStorage.getItem("mbg_client_tenant");
+      if (savedTenant) {
+        const profileStr = window.localStorage.getItem(`mbg_profile_${savedTenant}`);
+        if (profileStr) {
+          try {
+            const profile = JSON.parse(profileStr);
+            shopName = profile?.name || "";
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    }
+
+    // 3. Fallback: search localStorage for any profile key
+    if (!shopName) {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key && key.startsWith("mbg_profile_")) {
+          const profileStr = window.localStorage.getItem(key);
+          if (profileStr) {
+            try {
+              const profile = JSON.parse(profileStr);
+              if (profile?.name) {
+                shopName = profile.name;
+                break;
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
       }
     }
   }
