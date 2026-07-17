@@ -962,7 +962,8 @@ export const deleteClientAppointments = async (clientPhone: string): Promise<voi
         .from("appointments")
         .delete()
         .eq("tenant_id", tenantId)
-        .eq("client_phone", clientPhone);
+        .eq("client_phone", clientPhone)
+        .neq("status", "completed");
       if (error) throw error;
       toast.success("Histórico limpo no Supabase!");
       return;
@@ -978,7 +979,7 @@ export const deleteClientAppointments = async (clientPhone: string): Promise<voi
   if (appointmentsStr) {
     try {
       const appointments = JSON.parse(appointmentsStr) as Appointment[];
-      const filtered = appointments.filter((a) => a.clientPhone !== clientPhone);
+      const filtered = appointments.filter((a) => a.clientPhone !== clientPhone || a.status === "completed");
       window.localStorage.setItem(appointmentsKey, JSON.stringify(filtered));
       toast.success("Histórico limpo localmente!");
     } catch (e) {
@@ -1228,6 +1229,7 @@ export const getDashboardStats = async (
 
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(now.getDate() - 7);
+  oneWeekAgo.setHours(0, 0, 0, 0);
 
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
@@ -1258,7 +1260,7 @@ export const getDashboardStats = async (
     if (aptDateStr === todayStr) {
       dailyEarnings += aptPrice;
     }
-    if (aptDate >= oneWeekAgo && aptDate <= now) {
+    if (aptDate >= oneWeekAgo && aptDateStr <= todayStr) {
       weeklyEarnings += aptPrice;
     }
     if (aptDate >= startOfMonth && aptDate.getFullYear() === now.getFullYear() && aptDate.getMonth() === now.getMonth()) {
